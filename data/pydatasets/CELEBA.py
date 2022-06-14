@@ -1,3 +1,10 @@
+#
+#
+#! warning: official bugs when downloading from torchvision
+#!          Don't use Celeba dataset in our project for now(Jun 14 2022)
+#
+#
+
 import torchvision.datasets as datasets
 import numpy as np
 from PIL import Image
@@ -47,6 +54,8 @@ class CELEBA_Dataset(GeneralDataset):
                          dld):
         # download dataset to root
         obj = datasets.CelebA(root, train, ttype, tf, ttf, dld)
+
+        x, y = obj.data, obj.targets
 
         if self.indices:
             x = obj.data[self.indices]

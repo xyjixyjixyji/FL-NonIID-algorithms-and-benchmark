@@ -44,6 +44,8 @@ class CIFAR10_Dataset(GeneralDataset):
         # download dataset to root
         obj = datasets.CIFAR10(root, train, tf, ttf, dld)
 
+        x, y = obj.data, obj.targets
+
         if self.indices:
             x = obj.data[self.indices]
             y = obj.targets[self.indices]

@@ -43,9 +43,11 @@ class SVHN_Dataset(GeneralDataset):
         # download dataset to root
         obj = datasets.SVHN(root, train, tf, ttf, dld)
 
+        x, y = obj.data, obj.labels
+
         if self.indices:
-            x = obj.data[self.indices]
-            y = obj.targets[self.indices]
+            x = x[self.indices]
+            y = y[self.indices]
         
         return x, y
 
