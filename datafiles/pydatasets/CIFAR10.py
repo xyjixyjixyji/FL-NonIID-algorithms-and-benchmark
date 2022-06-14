@@ -1,22 +1,14 @@
-#
-#
-#! warning: official bugs when downloading from torchvision
-#!          Don't use Celeba dataset in our project for now(Jun 14 2022)
-#
-#
-
 import torchvision.datasets as datasets
 import numpy as np
 from PIL import Image
 from .datasets import GeneralDataset
 from ..utils import add_gaussian_noise
 
-class CELEBA_Dataset(GeneralDataset):
+class CIFAR10_Dataset(GeneralDataset):
     
     def __init__(self,
                  rootp,
                  train,
-                 ttype='identity',
                  transform=None, 
                  target_transform=None,
                  download=False,
@@ -26,8 +18,7 @@ class CELEBA_Dataset(GeneralDataset):
                  noise_std=1.):
 
         self.root = rootp # dataset rootpath
-        self.train = 'train' if train else 'test' # train?
-        self.ttype = ttype
+        self.train = train # train?
         self.tf = transform # tf(x)
         self.ttf = target_transform # ttf(y)
         self.dld = download # True when you run the first time
@@ -40,7 +31,6 @@ class CELEBA_Dataset(GeneralDataset):
 
         self.x, self.y = self.download_dataset(self.root,
                                                self.train,
-                                               self.ttype,
                                                self.tf,
                                                self.ttf,
                                                self.dld)
@@ -48,16 +38,15 @@ class CELEBA_Dataset(GeneralDataset):
     def download_dataset(self,
                          root,
                          train,
-                         ttype,
                          tf,
                          ttf,
                          dld):
         # download dataset to root
-        obj = datasets.CelebA(root, train, ttype, tf, ttf, dld)
+        obj = datasets.CIFAR10(root, train, tf, ttf, dld)
 
         x, y = obj.data, obj.targets
 
-        if self.indices:
+        if self.indices is not None and self.train:
             x = obj.data[self.indices]
             y = obj.targets[self.indices]
         
@@ -70,7 +59,7 @@ class CELEBA_Dataset(GeneralDataset):
             x = self.tf(x)
         if self.ttf:
             y = self.ttf(y)
-        
+
         if self.noise:
             x = add_gaussian_noise(x,
                                    mean=self.noise_mean,

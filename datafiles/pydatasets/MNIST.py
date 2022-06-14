@@ -1,10 +1,9 @@
 import torchvision.datasets as datasets
-import numpy as np
 from PIL import Image
 from .datasets import GeneralDataset
 from ..utils import add_gaussian_noise
 
-class SVHN_Dataset(GeneralDataset):
+class MNIST_Dataset(GeneralDataset):
     
     def __init__(self,
                  rootp,
@@ -18,7 +17,7 @@ class SVHN_Dataset(GeneralDataset):
                  noise_std=1.):
 
         self.root = rootp # dataset rootpath
-        self.train = 'train' if train else 'test' # train?
+        self.train = train # train?
         self.tf = transform # tf(x)
         self.ttf = target_transform # ttf(y)
         self.dld = download # True when you run the first time
@@ -41,13 +40,13 @@ class SVHN_Dataset(GeneralDataset):
                          ttf,
                          dld):
         # download dataset to root
-        obj = datasets.SVHN(root, train, tf, ttf, dld)
+        obj = datasets.MNIST(root, train, tf, ttf, dld)
 
-        x, y = obj.data, obj.labels
+        x, y = obj.data, obj.targets
 
-        if self.indices:
-            x = x[self.indices]
-            y = y[self.indices]
+        if self.indices is not None and self.train:
+            x = obj.data[self.indices]
+            y = obj.targets[self.indices]
         
         return x, y
 

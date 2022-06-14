@@ -3,8 +3,8 @@ from PIL import Image
 from .datasets import GeneralDataset
 from ..utils import add_gaussian_noise
 
-class MNIST_Dataset(GeneralDataset):
-    
+class KMNIST_Dataset(GeneralDataset):
+        
     def __init__(self,
                  rootp,
                  train,
@@ -44,15 +44,16 @@ class MNIST_Dataset(GeneralDataset):
 
         x, y = obj.data, obj.targets
 
-        if self.indices:
+        if self.indices is not None and self.train:
             x = obj.data[self.indices]
             y = obj.targets[self.indices]
         
         return x, y
-
+    
     def __getitem__(self, index):
         x, y = self.x[index], self.y[index]
 
+        x = Image.fromarray(x.numpy(), mode='L') # 1chan gray
         if self.tf:
             x = self.tf(x)
         if self.ttf:

@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 class GeneralDataset(Dataset):
 
     def __init__(self, **kwargs):
-        self.x, self.y = self.download_dataset(**kwargs)
+        pass
     
     def download_dataset(self, **kwargs):
         raise NotImplementedError
@@ -13,3 +13,9 @@ class GeneralDataset(Dataset):
 
     def __len__(self):
         return len(self.x)
+
+    def set_indices(self, indices):
+        if not self.indices:
+            self.indices = indices
+            self.x = self.x[indices]
+            self.y = self.y[indices]
