@@ -1,6 +1,6 @@
 import torchvision.datasets as datasets
+import torch
 import numpy as np
-from PIL import Image
 from .datasets import GeneralDataset
 from ..utils import add_gaussian_noise
 
@@ -45,10 +45,11 @@ class CIFAR10_Dataset(GeneralDataset):
         obj = datasets.CIFAR10(root, train, tf, ttf, dld)
 
         x, y = obj.data, obj.targets
+        y = torch.from_numpy(np.array(y))
 
         if self.indices is not None and self.train:
-            x = obj.data[self.indices]
-            y = obj.targets[self.indices]
+            x = x[self.indices]
+            y = y[self.indices]
         
         return x, y
 
