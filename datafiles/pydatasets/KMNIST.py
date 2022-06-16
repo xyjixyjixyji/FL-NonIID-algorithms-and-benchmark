@@ -54,10 +54,10 @@ class KMNIST_Dataset(GeneralDataset):
 
         if len(x.shape) == 3: # (B, H, W)
             x = torch.unsqueeze(x, 1)
-
+        
         if self.indices is not None and self.train:
-            x = obj.data[self.indices]
-            y = obj.targets[self.indices]
+            x = x[self.indices]
+            y = y[self.indices]
         
         return x, y
     

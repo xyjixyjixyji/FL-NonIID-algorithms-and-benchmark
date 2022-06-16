@@ -79,31 +79,100 @@ def quantity_skew(dataset_name,
     indices = random.permutation(nsample)
 
     # normally the batchsize is 32, we want every client to have at least 32 samples
-    min = float('-inf')
-    while min < 32:
+    minval = float('-inf')
+    while minval < 32:
         prop = random.dirichlet([alpha] * nclient)
         prop = prop / prop.sum()
-        min = np.min(prop * len(indices))
+        minval = np.min(prop * len(indices))
     prop = (np.cumsum(prop) * len(indices)).astype(int)[:-1]
 
     indices = np.split(indices, prop)
 
     for i in range(nclient):
         tr_set, _ = preprocess(dataset_name=dataset_name,
-                               indices=indices[i],
-                               noise=False)
+                               indices=indices[i])
         client2dataset[i] = tr_set
     
     for i in range(nclient):
         print(f'Client{i} has {len(client2dataset[i])} samples')
     
     print(f"Done skewing [{dataset_name}]")
+
     return client2dataset, te_set
     
+
 # each client holds some labels, following dirichlet dist.
-def label_skew_across_labels(dataset_name, nclient, nlabel, alpha):
+def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5):
     client2dataset = {}
 
+    tr_set, te_set = preprocess(dataset_name)
+
+    nsample = tr_set.y.shape[0]
+    labels = random.permutation(nlabel)
+    indices = [i for i in range(nsample)]
+
+    minval = float('-inf')
+    while minval < 1:
+        # each client must have at least 1 labels
+        prop = random.dirichlet([alpha] * nclient)
+        minval = np.min(prop * nlabel)
+    
+    prop = np.cumsum(prop * nlabel).astype(int)
+
+    for client in range(nclient):
+        nlabel_for_client = prop[client]
+        labels_local = labels.copy()
+        random.shuffle(labels_local)
+        label_for_client = labels_local[:nlabel_for_client]
+
+        indices = []
+        for lb in label_for_client:
+            indices.extend(np.where(tr_set.y == lb)[0])
+
+        tr_set, _ = preprocess(dataset_name=dataset_name,
+                               indices=indices)
+        client2dataset[client] = tr_set
+    
+    return client2dataset, te_set
+    
+#
+# courtesy to github repo: NIID_Bench utils.py, partially reference the code
+#   # see here: https://github.com/Xtra-Computing/NIID-Bench/blob/a4d420297ac7811436719e3bec0347d15e5e8674/utils.py
+#
 # for each label, each clients hold a certain # of samples, following dirichlet dist.
-def label_skew_by_within_labels(dataset_name, nclient, nlabel, alpha):
+def label_skew_by_within_labels(dataset_name, nclient, nlabel=10, alpha=.5):
     client2dataset = {}
+
+    tr_set, te_set = preprocess(dataset_name)
+
+    nsample = tr_set.y.shape[0]
+    indices = [i for i in range(nsample)]
+
+    # we first generate client[i] has labels [0, 3, 5, ...] in **label[i] = its label list**
+    minval = float('-inf')
+    label_distribution = None
+    while minval < 32:
+        label_distribution = [[] for _ in range(nclient)]
+        for lb in range(nlabel):
+            # indices: indices of label i in tr_set
+            indices = np.where(tr_set.y == lb)[0] # indices of samples, where label is k
+            random.shuffle(indices)
+
+            # now we split the indices according to dirichlet distribution
+            prop = random.dirichlet([alpha] * nclient)
+            # balancing
+            prop = np.array([p * (len(distribution_to_i) < nsample / nclient) for p, distribution_to_i in zip(prop, label_distribution)])
+            prop /= prop.sum()
+            prop = (np.cumsum(prop) * len(indices)).astype(int)[:-1]
+            
+            label_distribution = [idx_j + idx.tolist() for idx_j, idx in zip(label_distribution, np.split(indices, prop))]
+
+            minval = min([len(distribution_to_i) for distribution_to_i in label_distribution])
+    
+    for client in range(nclient):
+        tr_set, _ = preprocess(dataset_name=dataset_name,
+                               indices=label_distribution[client])
+        client2dataset[client] = tr_set
+    
+    return client2dataset, te_set
+ 

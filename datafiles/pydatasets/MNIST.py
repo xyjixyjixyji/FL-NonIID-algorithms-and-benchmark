@@ -55,8 +55,8 @@ class MNIST_Dataset(GeneralDataset):
             x = torch.unsqueeze(x, 1)
         
         if self.indices is not None and self.train:
-            x = obj.data[self.indices]
-            y = obj.targets[self.indices]
+            x = x[self.indices]
+            y = y[self.indices]
         
         return x, y
 
