@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 datafiles/datasets/*
-DS_Store
+.DS_Store
 
 # C extensions
 *.so
