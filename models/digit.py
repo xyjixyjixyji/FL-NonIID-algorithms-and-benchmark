@@ -13,7 +13,7 @@ class DigitModel(nn.Module):
     """
     def __init__(self, num_classes=10, **kwargs):
         super(DigitModel, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, 5, 1, 2)
+        self.conv1 = nn.Conv2d(1, 64, 5, 1, 2)
         self.bn1 = nn.BatchNorm2d(64)
         self.conv2 = nn.Conv2d(64, 64, 5, 1, 2)
         self.bn2 = nn.BatchNorm2d(64)
