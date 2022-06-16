@@ -44,6 +44,12 @@ parser.add_argument('--alpha', type=float,
 
 args = parser.parse_args()
 
+# Assert invariants
+assert(args.dsetname in ['svhn', 'cifar10', 'mnist', 'kmnist'])
+assert(args.skew in ['quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within'])
+assert(args.filtersz % 2 == 1)
+assert(args.mode in ['fedavg', 'fedprox', 'fedbn'])
+
 # ==================== global parameters setup
 
 dataset_name = args.dsetname
