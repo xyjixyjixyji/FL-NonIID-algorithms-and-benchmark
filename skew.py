@@ -45,6 +45,7 @@ def feature_skew_noise(dataset_name,
             te_set = te_s
     return client2dataset, te_set
 
+
 def feature_skew_filter(dataset_name,
                         nclient,
                         filter_sz=3,):
@@ -52,7 +53,17 @@ def feature_skew_filter(dataset_name,
         Feature skew, using filters to filter the dataset, 
         skewing level controlled by filter size (min: 1, max: 5)
     '''
-    pass
+    te_set = None
+    client2dataset = {}
+    for i in range(nclient):
+        tr_s, te_s = preprocess(dataset_name=dataset_name,
+                                filter=True,
+                                filter_sz=filter_sz)
+        client2dataset[i] = tr_s
+        if i == 0:
+            te_set = te_s
+    return client2dataset, te_set
+
 
 def quantity_skew(dataset_name,
                   nclient,

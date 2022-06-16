@@ -1,6 +1,7 @@
 import torchvision.datasets as datasets
-import torch
+import torch.nn.functional as F
 import numpy as np
+import torch
 from .datasets import GeneralDataset
 from ..utils import add_gaussian_noise
 
@@ -15,7 +16,9 @@ class CIFAR10_Dataset(GeneralDataset):
                  indices=None,
                  noise=False,
                  noise_mean=0.,
-                 noise_std=1.):
+                 noise_std=1.,
+                 filter=False,
+                 filter_sz=3):
 
         self.root = rootp # dataset rootpath
         self.train = train # train?
@@ -28,6 +31,9 @@ class CIFAR10_Dataset(GeneralDataset):
         self.noise = noise
         self.noise_mean = noise_mean
         self.noise_std = noise_std
+
+        self.filter = filter
+        self.filter_sz = filter_sz
 
         self.x, self.y = self.download_dataset(self.root,
                                                self.train,
@@ -45,7 +51,8 @@ class CIFAR10_Dataset(GeneralDataset):
         obj = datasets.CIFAR10(root, train, tf, ttf, dld)
 
         x, y = obj.data, obj.targets
-        y = torch.from_numpy(np.array(y))
+        x = np.transpose(x, (0, 3, 1, 2))
+        x, y = torch.from_numpy(x).float(), torch.from_numpy(np.array(y)).float()
 
         if self.indices is not None and self.train:
             x = x[self.indices]
@@ -65,5 +72,11 @@ class CIFAR10_Dataset(GeneralDataset):
             x = add_gaussian_noise(x,
                                    mean=self.noise_mean,
                                    std=self.noise_std)
+
+        if self.filter:
+            sz = [[1 for _ in range(self.filter_sz)] for _ in range(self.filter_sz)]
+            filt = torch.tensor(sz) / (self.filter_sz ** 2)
+            filt = filt.expand(3, 3, self.filter_sz, self.filter_sz)
+            x = F.conv2d(x, filt, stride=1, padding=1)
         
         return x, y

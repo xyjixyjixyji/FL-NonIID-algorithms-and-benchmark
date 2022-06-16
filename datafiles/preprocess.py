@@ -8,9 +8,10 @@ def preprocess(dataset_name,
                indices=None,
                noise=False,
                noise_mean=0.,
-               noise_std=1):
+               noise_std=1,
+               filter=False,
+               filter_sz=3):
 
-    PIL_dataset_name = ['kmnist']
     augment_dataset_name = ['cifar10']
 
     name2func = { #'celeba': CELEBA_Dataset,
@@ -30,11 +31,6 @@ def preprocess(dataset_name,
     tf_train = []
     tf_test = []
 
-    if dataset_name in PIL_dataset_name:
-        tf_train.append(transforms.ToTensor())
-        tf_test.append(transforms.ToTensor())
-        
-
     if dataset_name in augment_dataset_name:
         tf_train.append(transforms.ToPILImage())
         tf_train.append(transforms.RandomCrop(32))
@@ -51,7 +47,9 @@ def preprocess(dataset_name,
                              indices=indices,
                              noise=noise,
                              noise_mean=noise_mean,
-                             noise_std=noise_std)
+                             noise_std=noise_std,
+                             filter=filter,
+                             filter_sz=filter_sz)
 
     test_set = dataset_func(rootp=rootp,
                             train=False,
@@ -60,6 +58,9 @@ def preprocess(dataset_name,
                             indices=indices,
                             noise=noise,
                             noise_mean=noise_mean,
-                            noise_std=noise_std)
+                            noise_std=noise_std,
+                            filter=filter,
+                            filter_sz=filter_sz)
+
     
     return train_set, test_set
