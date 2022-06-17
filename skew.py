@@ -37,8 +37,9 @@ def feature_skew_noise(dataset_name,
     te_set = None
     client2dataset = {}
     for i in range(nclient):
+        noise = True if random.randint(1, 10000) % 2 else False
         tr_s, te_s = preprocess(dataset_name=dataset_name,
-                                noise=True,
+                                noise=noise,
                                 noise_std=noise_std)
         client2dataset[i] = tr_s
         if i == 0:
@@ -56,8 +57,9 @@ def feature_skew_filter(dataset_name,
     te_set = None
     client2dataset = {}
     for i in range(nclient):
+        filter = True if random.randint(1, 10000) % 2 else False
         tr_s, te_s = preprocess(dataset_name=dataset_name,
-                                filter=True,
+                                filter=filter,
                                 filter_sz=filter_sz)
         client2dataset[i] = tr_s
         if i == 0:

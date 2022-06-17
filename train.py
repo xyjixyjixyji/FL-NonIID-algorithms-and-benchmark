@@ -7,7 +7,7 @@ import argparse
 import torch
 import torch.nn as nn
 
-# COURTESY: TWO MODELS ARE FROM THE INTERNET, LINKS ATTACHED IN FILE
+#! COURTESY: TWO DEEP MODELS ARE FROM THE INTERNET, LINKS ATTACHED IN FILE
 # when using svhn or cifar10, use resnet
 # when using mnist or kmnist, use digitmodel
 
