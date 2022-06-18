@@ -2,50 +2,106 @@
 
 
 """
-federated learning with different aggregation strategy on benchmark exp.
+Federated learning with different aggregation strategy on benchmark exp.
 
-test command:
-python fed_digits.py --mode fedbn --model DigitModel --dsetname mnist --skew_type gaussian --nclient 3
+example test command:
+    python FL_tr.py --mode fedbn --model DigitModel --dsetname mnist --skew feat_noise --noise_std 0.5 --nclient 3
+
+parameters you HAVE TO set:
+
+        mode: fedbn fedprox fed avg
+        model: check args.model
+        dsetname: mnist, kmnist, svhn, cifar10 (case sensitive)
+        skew:
+            quantity:
+                - Di_alpha: the parameter of dirichlet distribution
+            feat_noise
+                - noise_std: the standard deviation of the noise
+            feat_filter
+                - filter_sz: the kernel size of the mean filter
+            label_across
+                - Di_alpha: same as above
+            label_within
+                - Di_alpha: same as above
+        nlabel: please set correspondant to your dataset, for all dataset we offer, default is 10
+        nclient: five is generally feasible, more clients will bring slowing speed, since this is an emulation
 
 details in args
 """
 
 import torch
-from torch import nn, optim
-import time,os
+import time
+import os
 import copy
-from models.digit import DigitModel
-from models.resnet import *
+import torch.nn
+import torch.optim
 import argparse
 import numpy as np
 import torchvision
 import torchvision.transforms as transforms
+from models.digit import DigitModel
+from models.resnet import *
 from skew import label_skew_across_labels, label_skew_by_within_labels, quantity_skew, feature_skew_noise, feature_skew_filter
 from datafiles.loaders import dset2loader
 from datafiles.utils import setseed
 from datafiles.preprocess import preprocess
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--test', action='store_true', help='test the pretrained model')
+parser.add_argument('--percent', type=float, default=0.1, help ='percentage of dataset to train')
+parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
+parser.add_argument('--batch_size', type=int, default=32, help ='batch size')
+parser.add_argument('--iters', type=int, default=100, help='iterations for communication')
+parser.add_argument('--wk_iters', type=int, default=1, help='optimization iters in local worker between communication')
+parser.add_argument('--mode', type=str, default='fedbn', help='fedavg | fedprox | fedbn')
+parser.add_argument('--mu', type=float, default=1e-2, help='The hyper parameter for fedprox')
+parser.add_argument('--save_path', type=str, default='../checkpoint', help='path to save the checkpoint')
+parser.add_argument('--load_path', type=str, default='../checkpoint', help='path to save the checkpoint')
+parser.add_argument('--log_path', type=str, default='../logs/', help='path to save the checkpoint')
+parser.add_argument('--resume', action='store_true', help='resume training from the save path checkpoint')
+
+parser.add_argument('--model', type = str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
+parser.add_argument('--dsetname', type = str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
+parser.add_argument('--skew', type=str, default='None', help='| none | quantity | feat_filter | feat_noise | label_across | label_within |')
+parser.add_argument('--noise_std', type=float, default=0.5, help='noise level for gaussion noise')
+parser.add_argument('--filter_sz', type=int, default=3, help='filter size for filter')
+parser.add_argument('--Di_alpha', type=float, default=0.5, help='alpha level for dirichlet distribution')
+parser.add_argument('--nlabel', type = int, default=10, help = 'number of label for dirichlet label skew')
+parser.add_argument('--nclient', type = int, default=5, help = 'client number')
+
+args = parser.parse_args()
+
+print(f"args: {args}")
+
+assert(args.dsetname in ['svhn', 'cifar10', 'mnist', 'kmnist'])
+assert(args.skew in ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within'])
+assert(args.Fl_size % 2 == 1)
+assert(args.mode in ['fedavg', 'fedprox', 'fedbn'])
+
 def prepare_data(args):
     train_loaders = []
     test_loaders  = []
     tr_sets, te_set = [],[]
-    if args.skew_type == 'none':
+        
+    if args.skew == 'none':
         tr_sets, te_set = feature_skew_noise(args.dsetname, args.nclient, 0)
-    elif args.skew_type == 'gaussian':
-        tr_sets, te_set = feature_skew_noise(args.dsetname, args.nclient, args.Ga_noise)
-    elif args.skew_type == 'filter':
-        tr_sets, te_set = feature_skew_filter(args.dsetname, args.nclient, args.Fl_size)
-    elif args.skew_type == 'dirichlet':
-        if args.Di_type == 'quantity':
-            tr_sets, te_set = quantity_skew(args.dsetname, args.nclient, args.Di_alpha)
-        elif args.Di_type == 'across_label':
-            tr_sets, te_set = label_skew_across_labels(args.dsetname, args.nclient, args.nlabel, args.Di_alpha)
-        elif args.Di_type == 'within_label':
-            tr_sets, te_set = label_skew_by_within_labels(args.dsetname, args.nclient, args.nlabel, args.Di_alpha)
+    elif args.skew == 'quantity':
+        tr_sets, te_set = quantity_skew(args.dsetname, args.nclient, args.Di_alpha)
+    elif args.skew == 'feat_noise':
+        tr_sets, te_set = feature_skew_noise(args.dsetname, args.nclient, args.noise_std)
+    elif args.skew == 'feat_filter':
+        tr_sets, te_set = feature_skew_filter(args.dsetname, args.nclient, args.filter_sz)
+    elif args.skew == 'label_across':
+        tr_sets, te_set = label_skew_across_labels(args.dsetname, args.nclient, args.nlabel, args.Di_alpha)
+    elif args.skew == 'within_label':
+        tr_sets, te_set = label_skew_by_within_labels(args.dsetname, args.nclient, args.nlabel, args.Di_alpha)
+    else:
+        raise ValueError("UNDEFINED SKEW")
+
     for tr_s in tr_sets:
-        tr_l = dset2loader(tr_s,args.batch)
+        tr_l = dset2loader(tr_s,args.batch_size)
+        te_l = dset2loader(te_set,args.batch_size)
         train_loaders.append(tr_l)
-        te_l = dset2loader(te_set,args.batch)
         test_loaders.append(te_l)
 
     return train_loaders, test_loaders
@@ -166,34 +222,6 @@ if __name__ == '__main__':
     torch.cuda.manual_seed_all(seed) 
 
     print('Device:', device)
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--test', action='store_true', help ='test the pretrained model')
-    parser.add_argument('--percent', type = float, default= 0.1, help ='percentage of dataset to train')
-    parser.add_argument('--lr', type=float, default=1e-2, help='learning rate')
-    parser.add_argument('--batch', type = int, default= 32, help ='batch size')
-    parser.add_argument('--iters', type = int, default=100, help = 'iterations for communication')
-    parser.add_argument('--wk_iters', type = int, default=1, help = 'optimization iters in local worker between communication')
-    parser.add_argument('--mode', type = str, default='fedbn', help='fedavg | fedprox | fedbn')
-    parser.add_argument('--mu', type=float, default=1e-2, help='The hyper parameter for fedprox')
-    parser.add_argument('--save_path', type = str, default='../checkpoint', help='path to save the checkpoint')
-    parser.add_argument('--load_path', type = str, default='../checkpoint', help='path to save the checkpoint')
-    parser.add_argument('--log_path', type = str, default='../logs/', help='path to save the checkpoint')
-    parser.add_argument('--resume', action='store_true', help ='resume training from the save path checkpoint')
-
-    parser.add_argument('--model', type = str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
-    parser.add_argument('--dsetname', type = str, default="mnist", help = 'dataset used for model: mnist, kmnist, svhn, cifar10')
-    parser.add_argument('--skew_type', type = str, default="none", help = '| none | gaussian | filter | dirichlet | ')
-    parser.add_argument('--Di_type', type = str, default="quantity", help = '| quantity | across_label | within_label | ')
-    parser.add_argument('--Ga_noise', type=float, default=0.5, help='noise level for gaussion noise')
-    parser.add_argument('--Fl_size', type=int, default=3, help='filter size for filter')
-    parser.add_argument('--Di_alpha', type=float, default=0.5, help='alpha level for dirichlet distribution')
-    parser.add_argument('--nlabel', type = int, default=10, help = 'number of label for dirichlet label skew')
-    parser.add_argument('--nclient', type = int, default=10, help = 'client number')
-
-    args = parser.parse_args()
-
-    assert(args.dsetname in ['svhn', 'cifar10', 'mnist', 'kmnist'])
-
 
     args.save_path = os.path.join(args.save_path, args.model)
     log_path = os.path.join(args.log_path, args.model)
@@ -203,7 +231,7 @@ if __name__ == '__main__':
     logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
     logfile.write('===Setting===\n')
     logfile.write('    lr: {}\n'.format(args.lr))
-    logfile.write('    batch: {}\n'.format(args.batch))
+    logfile.write('    batch: {}\n'.format(args.batch_size))
     logfile.write('    iters: {}\n'.format(args.iters))
     logfile.write('    wk_iters: {}\n'.format(args.wk_iters))
 
