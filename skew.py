@@ -35,13 +35,13 @@ def feature_skew_noise(dataset_name,
         skewing level controlled by noise standard deviation (min: 0, max: 1)
     '''
     te_set = None
-    client2dataset = {}
+    client2dataset = []
     for i in range(nclient):
         noise = True if random.randint(1, 10000) % 2 else False
         tr_s, te_s = preprocess(dataset_name=dataset_name,
                                 noise=noise,
                                 noise_std=noise_std)
-        client2dataset[i] = tr_s
+        client2dataset.append(tr_s)
         if i == 0:
             te_set = te_s
     return client2dataset, te_set
@@ -55,13 +55,13 @@ def feature_skew_filter(dataset_name,
         skewing level controlled by filter size (min: 1, max: 5)
     '''
     te_set = None
-    client2dataset = {}
+    client2dataset = []
     for i in range(nclient):
         filter = True if random.randint(1, 10000) % 2 else False
         tr_s, te_s = preprocess(dataset_name=dataset_name,
                                 filter=filter,
                                 filter_sz=filter_sz)
-        client2dataset[i] = tr_s
+        client2dataset.append(tr_s)
         if i == 0:
             te_set = te_s
     return client2dataset, te_set
@@ -73,7 +73,7 @@ def quantity_skew(dataset_name,
     '''
         Dirichlet distribution, to nclient
     '''
-    client2dataset = {}
+    client2dataset = []
 
     tr_set, te_set = preprocess(dataset_name)
     nsample = tr_set.y.shape[0]
@@ -93,7 +93,7 @@ def quantity_skew(dataset_name,
     for i in range(nclient):
         tr_set, _ = preprocess(dataset_name=dataset_name,
                                indices=indices[i])
-        client2dataset[i] = tr_set
+        client2dataset.append(tr_s)
     
     for i in range(nclient):
         print(f'Client{i} has {len(client2dataset[i])} samples')
@@ -105,7 +105,7 @@ def quantity_skew(dataset_name,
 
 # each client holds some labels, following dirichlet dist.
 def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5):
-    client2dataset = {}
+    client2dataset = []
 
     tr_set, te_set = preprocess(dataset_name)
 
@@ -133,7 +133,7 @@ def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5):
 
         tr_set, _ = preprocess(dataset_name=dataset_name,
                                indices=indices)
-        client2dataset[client] = tr_set
+        client2dataset.append(tr_s)
     
     return client2dataset, te_set
     
@@ -143,7 +143,7 @@ def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5):
 #
 # for each label, each clients hold a certain # of samples, following dirichlet dist.
 def label_skew_by_within_labels(dataset_name, nclient, nlabel=10, alpha=.5):
-    client2dataset = {}
+    client2dataset = []
 
     tr_set, te_set = preprocess(dataset_name)
 
@@ -174,7 +174,7 @@ def label_skew_by_within_labels(dataset_name, nclient, nlabel=10, alpha=.5):
     for client in range(nclient):
         tr_set, _ = preprocess(dataset_name=dataset_name,
                                indices=label_distribution[client])
-        client2dataset[client] = tr_set
+        client2dataset.append(tr_s)
     
     return client2dataset, te_set
  

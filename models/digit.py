@@ -11,16 +11,16 @@ class DigitModel(nn.Module):
     """
     Model for benchmark experiment on Digits. 
     """
-    def __init__(self, num_classes=10, **kwargs):
+    def __init__(self, num_classes=10,in_channels=3, **kwargs):
         super(DigitModel, self).__init__()
-        self.conv1 = nn.Conv2d(1, 64, 5, 1, 2)
+        self.conv1 = nn.Conv2d(in_channels, 64, 5, 1, 2)
         self.bn1 = nn.BatchNorm2d(64)
         self.conv2 = nn.Conv2d(64, 64, 5, 1, 2)
         self.bn2 = nn.BatchNorm2d(64)
         self.conv3 = nn.Conv2d(64, 128, 5, 1, 2)
         self.bn3 = nn.BatchNorm2d(128)
     
-        self.fc1 = nn.Linear(6272, 2048)
+        self.fc1 = nn.Linear(128*8*8, 2048)
         self.bn4 = nn.BatchNorm1d(2048)
         self.fc2 = nn.Linear(2048, 512)
         self.bn5 = nn.BatchNorm1d(512)

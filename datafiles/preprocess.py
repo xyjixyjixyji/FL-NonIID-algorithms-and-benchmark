@@ -28,14 +28,22 @@ def preprocess(dataset_name,
     if dataset_func == None:
         raise ValueError("DATASET NOT IMPLEMENTED")
 
-    tf_train = []
-    tf_test = []
+    tf_train = [ transforms.ToPILImage(),
+                transforms.Resize([32,32]),
+                transforms.Grayscale(num_output_channels=3)]
 
-    if dataset_name in augment_dataset_name:
-        tf_train.append(transforms.ToPILImage())
-        tf_train.append(transforms.RandomCrop(32))
-        tf_train.append(transforms.RandomHorizontalFlip())
-        tf_train.append(transforms.ToTensor())
+    tf_test = [ transforms.ToPILImage(),
+                transforms.Resize([32,32]),
+                transforms.Grayscale(num_output_channels=3),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+
+    # if dataset_name in augment_dataset_name:
+    #     tf_train.append(transforms.RandomCrop(28))
+    #     tf_train.append(transforms.RandomHorizontalFlip())
+
+    tf_train.append(transforms.ToTensor())
+    tf_train.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
 
     tf_train = transforms.Compose(tf_train)
     tf_test = transforms.Compose(tf_test)
