@@ -52,8 +52,8 @@ parser.add_argument('--test', action='store_true', help='test the pretrained mod
 parser.add_argument('--percent', type=float, default=0.1, help ='percentage of dataset to train')
 parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
 parser.add_argument('--batch_size', type=int, default=32, help ='batch size')
-parser.add_argument('--iters', type=int, default=100, help='iterations for communication')
-parser.add_argument('--wk_iters', type=int, default=1, help='optimization iters in local worker between communication')
+parser.add_argument('--iters', type=int, default=50, help='iterations for communication')
+parser.add_argument('--wk_iters', type=int, default=3, help='optimization iters in local worker between communication')
 parser.add_argument('--mode', type=str, default='fedbn', help='fedavg | fedprox | fedbn')
 parser.add_argument('--mu', type=float, default=1e-2, help='The hyper parameter for fedprox')
 parser.add_argument('--save_path', type=str, default='./checkpoint', help='path to save the checkpoint')
@@ -63,7 +63,7 @@ parser.add_argument('--resume', action='store_true', help='resume training from 
 
 parser.add_argument('--model', type=str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
 parser.add_argument('--dataset', type=str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
-parser.add_argument('--skew', type=str, default='None', help='| none | quantity | feat_filter | feat_noise | label_across | label_within |')
+parser.add_argument('--skew', type=str, default='none', help='| none | quantity | feat_filter | feat_noise | label_across | label_within |')
 parser.add_argument('--noise_std', type=float, default=0.5, help='noise level for gaussion noise')
 parser.add_argument('--filter_sz', type=int, default=3, help='filter size for filter')
 parser.add_argument('--Di_alpha', type=float, default=0.5, help='alpha level for dirichlet distribution')
@@ -77,7 +77,7 @@ print(f"args: {args}")
 
 assert(args.dataset in ['svhn', 'cifar10', 'mnist', 'kmnist'])
 assert(args.skew in ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within'])
-assert(args.Fl_size % 2 == 1)
+# assert(args.Fl_size % 2 == 1)
 assert(args.mode in ['fedavg', 'fedprox', 'fedbn'])
 
 setseed(args.seed)
@@ -107,6 +107,7 @@ def prepare_data(args):
         te_l = dset2loader(te_set,args.batch_size)
         train_loaders.append(tr_l)
         test_loaders.append(te_l)
+    # test_loader = dset2loader(te_set,args.batch_size)
 
     return train_loaders, test_loaders
 
@@ -173,7 +174,7 @@ if __name__ == '__main__':
     log_path = os.path.join(args.log_path, args.model)
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-    logfile = open(os.path.join(log_path,'{}.log'.format(args.mode)), 'a')
+    logfile = open(os.path.join(log_path,'{}_{}_{}.log'.format(args.mode,args.dataset,args.skew)), 'a')
     logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
     logfile.write('===Setting===\n')
     logfile.write('    lr: {}\n'.format(args.lr))
@@ -197,21 +198,21 @@ if __name__ == '__main__':
     client_weights = [1/client_num for i in range(client_num)]
     models = [copy.deepcopy(server_model).to(device) for idx in range(client_num)]
 
-    if args.test:
-        print('Loading snapshots...')
-        checkpoint = torch.load(os.path.join(args.load_path, '{}'.format(args.mode)))
-        server_model.load_state_dict(checkpoint['server_model'])
-        if args.mode.lower()=='fedbn':
-            for client_idx in range(client_num):
-                models[client_idx].load_state_dict(checkpoint['model_{}'.format(client_idx)])
-            for test_idx, test_loader in enumerate(test_loaders):
-                _, test_acc = test(models[test_idx], test_loader, loss_fun, device)
-                print(' client {}| Test  Acc: {:.4f}'.format(test_idx, test_acc))
-        else:
-            for test_idx, test_loader in enumerate(test_loaders):
-                _, test_acc = test(server_model, test_loader, loss_fun, device)
-                print(' client {}| Test  Acc: {:.4f}'.format(test_idx, test_acc))
-        exit(0)
+    # if args.test:
+    #     print('Loading snapshots...')
+    #     checkpoint = torch.load(os.path.join(args.load_path, '{}'.format(args.mode)))
+    #     server_model.load_state_dict(checkpoint['server_model'])
+    #     if args.mode.lower()=='fedbn':
+    #         for client_idx in range(client_num):
+    #             models[client_idx].load_state_dict(checkpoint['model_{}'.format(client_idx)])
+    #         for test_idx, test_loader in enumerate(test_loaders):
+    #             _, test_acc = test(models[test_idx], test_loader, loss_fun, device)
+    #             print(' client {}| Test  Acc: {:.4f}'.format(test_idx, test_acc))
+    #     else:
+    #         for test_idx, test_loader in enumerate(test_loaders):
+    #             _, test_acc = test(server_model, test_loader, loss_fun, device)
+    #             print(' client {}| Test  Acc: {:.4f}'.format(test_idx, test_acc))
+    #     exit(0)
 
     if args.resume:
         checkpoint = torch.load(SAVE_PATH)
@@ -226,10 +227,11 @@ if __name__ == '__main__':
         print('Resume training from epoch {}'.format(resume_iter))
     else:
         resume_iter = 0
-
     # start training
     for a_iter in range(resume_iter, args.iters):
         optimizers = [optim.SGD(params=models[idx].parameters(), lr=args.lr) for idx in range(client_num)]
+        samples = [0 for i in range(client_num)]
+        total = 0
         for wi in range(args.wk_iters):
             print("============ Train epoch {} ============".format(wi + a_iter * args.wk_iters))
             logfile.write("============ Train epoch {} ============\n".format(wi + a_iter * args.wk_iters)) 
@@ -242,11 +244,17 @@ if __name__ == '__main__':
                     else:
                         train(model, train_loader, optimizer, loss_fun, client_num, device)
                 else:
+                    if args.mode.lower() == 'fedavg':
+                        samples[client_idx] += len(train_loader)
+                        total += len(train_loader)
                     train(model, train_loader, optimizer, loss_fun, client_num, device)
          
         # aggregation
+        if args.mode.lower() == 'fedavg':
+            client_weights = [samples[i]/total for i in range(client_num)]
         server_model, models = communication(args, server_model, models, client_weights)
-        
+        min_test_loss = 1000
+        max_test_acc = 0
         # report after aggregation
         for client_idx in range(client_num):
                 model, train_loader, optimizer = models[client_idx], train_loaders[client_idx], optimizers[client_idx]
@@ -259,11 +267,17 @@ if __name__ == '__main__':
             test_loss, test_acc = test(models[test_idx], test_loader, loss_fun, device)
             print(' client {}| Test  Loss: {:.4f} | Test  Acc: {:.4f}'.format(test_idx, test_loss, test_acc))
             logfile.write(' client {}| Test  Loss: {:.4f} | Test  Acc: {:.4f}\n'.format(test_idx, test_loss, test_acc))
+            if test_acc > max_test_acc:
+                server_model = models[test_idx]
+                max_test_acc = test_acc
+                min_test_loss = test_loss
+        print(' server | Test  Loss: {:.4f} | Test  Acc: {:.4f}'.format(min_test_loss, max_test_acc))
+        logfile.write(' server | Test  Loss: {:.4f} | Test  Acc: {:.4f}\n'.format(min_test_loss, max_test_acc))
 
     # Save checkpoint
     print(' Saving checkpoints to {}...'.format(SAVE_PATH))
     if args.mode.lower() == 'fedbn':
-        dic = {'model_{}'.fomat(num):models[num].state_dict() for num in range(client_num)}
+        dic = {'model_{}'.format(num):models[num].state_dict() for num in range(client_num)}
         dic.update({'server_model': server_model.state_dict()})
         torch.save(dic, SAVE_PATH)
     else:
