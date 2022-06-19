@@ -33,8 +33,8 @@ import torch
 import time
 import os
 import copy
-import torch.nn
-import torch.optim
+import torch.nn as nn
+import torch.optim as optim
 import argparse
 import numpy as np
 import torchvision
@@ -45,6 +45,7 @@ from skew import label_skew_across_labels, label_skew_by_within_labels, quantity
 from datafiles.loaders import dset2loader
 from datafiles.utils import setseed
 from datafiles.preprocess import preprocess
+from tr_utils import train, train_fedprox
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--test', action='store_true', help='test the pretrained model')
@@ -60,14 +61,15 @@ parser.add_argument('--load_path', type=str, default='../checkpoint', help='path
 parser.add_argument('--log_path', type=str, default='../logs/', help='path to save the checkpoint')
 parser.add_argument('--resume', action='store_true', help='resume training from the save path checkpoint')
 
-parser.add_argument('--model', type = str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
-parser.add_argument('--dsetname', type = str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
+parser.add_argument('--model', type=str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
+parser.add_argument('--dsetname', type=str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
 parser.add_argument('--skew', type=str, default='None', help='| none | quantity | feat_filter | feat_noise | label_across | label_within |')
 parser.add_argument('--noise_std', type=float, default=0.5, help='noise level for gaussion noise')
 parser.add_argument('--filter_sz', type=int, default=3, help='filter size for filter')
 parser.add_argument('--Di_alpha', type=float, default=0.5, help='alpha level for dirichlet distribution')
-parser.add_argument('--nlabel', type = int, default=10, help = 'number of label for dirichlet label skew')
-parser.add_argument('--nclient', type = int, default=5, help = 'client number')
+parser.add_argument('--nlabel', type=int, default=10, help='number of label for dirichlet label skew')
+parser.add_argument('--nclient', type=int, default=5, help='client number')
+parser.add_argument('--seed', type=int, default=400, help='random seed')
 
 args = parser.parse_args()
 
@@ -77,6 +79,8 @@ assert(args.dsetname in ['svhn', 'cifar10', 'mnist', 'kmnist'])
 assert(args.skew in ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within'])
 assert(args.Fl_size % 2 == 1)
 assert(args.mode in ['fedavg', 'fedprox', 'fedbn'])
+
+setseed(args.seed)
 
 def prepare_data(args):
     train_loaders = []
@@ -105,65 +109,6 @@ def prepare_data(args):
         test_loaders.append(te_l)
 
     return train_loaders, test_loaders
-
-def train(model, train_loader, optimizer, loss_fun, client_num, device):
-    model.train()
-    num_data = 0
-    correct = 0
-    loss_all = 0
-    train_iter = iter(train_loader)
-    for step in range(len(train_iter)):
-        optimizer.zero_grad()
-        x, y = next(train_iter)
-       
-        num_data += y.size(0)
-        x = x.to(device).float()
-        y = y.to(device).long()
-        output = model(x)
-
-        loss = loss_fun(output, y)
-        loss.backward()
-        loss_all += loss.item()
-        optimizer.step()
-
-        pred = output.data.max(1)[1]
-        correct += pred.eq(y.view(-1)).sum().item()
-    return loss_all/len(train_iter), correct/num_data
-
-def train_fedprox(args, model, train_loader, optimizer, loss_fun, client_num, device):
-    model.train()
-    num_data = 0
-    correct = 0
-    loss_all = 0
-    train_iter = iter(train_loader)
-
-    for step in range(len(train_iter)):
-        optimizer.zero_grad()
-        x, y = next(train_iter)
-
-        num_data += y.size(0)
-        x = x.to(device).float()
-        y = y.to(device).long()
-        output = model(x)
-
-        loss = loss_fun(output, y)
-
-        #########################we implement FedProx Here###########################
-        # referring to https://github.com/IBM/FedMA/blob/4b586a5a22002dc955d025b890bc632daa3c01c7/main.py#L819
-        if step>0:
-            w_diff = torch.tensor(0., device=device)
-            for w, w_t in zip(server_model.parameters(), model.parameters()):
-                w_diff += torch.pow(torch.norm(w - w_t), 2)
-            loss += args.mu / 2. * w_diff
-        #############################################################################
-
-        loss.backward()
-        loss_all += loss.item()
-        optimizer.step()
-
-        pred = output.data.max(1)[1]
-        correct += pred.eq(y.view(-1)).sum().item()
-    return loss_all/len(train_iter), correct/num_data
 
 def test(model, test_loader, loss_fun, device):
     model.eval()
@@ -211,6 +156,7 @@ def communication(args, server_model, models, client_weights):
                     server_model.state_dict()[key].data.copy_(temp)
                     for client_idx in range(len(client_weights)):
                         models[client_idx].state_dict()[key].data.copy_(server_model.state_dict()[key])
+
     return server_model, models
 
 
@@ -292,7 +238,7 @@ if __name__ == '__main__':
                 model, train_loader, optimizer = models[client_idx], train_loaders[client_idx], optimizers[client_idx]
                 if args.mode.lower() == 'fedprox':
                     if a_iter > 0:
-                        train_fedprox(args, model, train_loader, optimizer, loss_fun, client_num, device)
+                        train_fedprox(args, model, server_model, train_loader, optimizer, loss_fun, client_num, device)
                     else:
                         train(model, train_loader, optimizer, loss_fun, client_num, device)
                 else:
