@@ -5,7 +5,12 @@
 Federated learning with different aggregation strategy on benchmark exp.
 
 example test command:
-    python FL_tr.py --mode fedbn --model DigitModel --dataset mnist --skew feat_noise --noise_std 0.5 --nclient 3
+    python FL_tr.py --mode fedbn \
+                    --model DigitModel \
+                    --dataset mnist \
+                    --skew feat_noise \
+                    --noise_std 0.5 \
+                    --nclient 3
 
 parameters you HAVE TO set:
 
@@ -21,6 +26,7 @@ parameters you HAVE TO set:
                 - filter_sz: the kernel size of the mean filter
             label_across
                 - Di_alpha: same as above
+                - overlap: if the clients' label are allowed to overlap
             label_within
                 - Di_alpha: same as above
         nlabel: please set correspondant to your dataset, for all dataset we offer, default is 10
@@ -67,6 +73,7 @@ parser.add_argument('--skew', type=str, default='none', help='| none | quantity 
 parser.add_argument('--noise_std', type=float, default=0.5, help='noise level for gaussion noise')
 parser.add_argument('--filter_sz', type=int, default=3, help='filter size for filter')
 parser.add_argument('--Di_alpha', type=float, default=0.5, help='alpha level for dirichlet distribution')
+parser.add_argument('--overlap', type=bool, default=True, help='If lskew_across allows label distribution to overlap')
 parser.add_argument('--nlabel', type=int, default=10, help='number of label for dirichlet label skew')
 parser.add_argument('--nclient', type=int, default=5, help='client number')
 parser.add_argument('--seed', type=int, default=400, help='random seed')
@@ -96,7 +103,7 @@ def prepare_data(args):
     elif args.skew == 'feat_filter':
         tr_sets, te_set = feature_skew_filter(args.dataset, args.nclient, args.filter_sz)
     elif args.skew == 'label_across':
-        tr_sets, te_set = label_skew_across_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha)
+        tr_sets, te_set = label_skew_across_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha, args.overlap)
     elif args.skew == 'within_label':
         tr_sets, te_set = label_skew_by_within_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha)
     else:

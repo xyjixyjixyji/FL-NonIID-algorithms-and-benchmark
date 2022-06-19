@@ -104,7 +104,7 @@ def quantity_skew(dataset_name,
     
 
 # each client holds some labels, following dirichlet dist.
-def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5):
+def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5, overlap=True):
     client2dataset = []
 
     tr_set, te_set = preprocess(dataset_name)
@@ -114,19 +114,43 @@ def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5):
     indices = [i for i in range(nsample)]
 
     minval = float('-inf')
-    while minval < 1:
+    maxval = float('-inf')
+    while minval < 1 or \
+          maxval < nlabel // 2:
         # each client must have at least 1 labels
         prop = random.dirichlet([alpha] * nclient)
         minval = np.min(prop * nlabel)
+        maxval = np.max(prop * nlabel)
     
-    prop = np.cumsum(prop * nlabel).astype(int)
+    prop = np.cumsum(prop * nlabel).astype(int)[:-1]
+
+    labels = np.split(labels, prop)
+
+    if overlap:
+        # print("overlap")
+        # make label distributions overlap a bit
+        redistribute = nlabel // 2
+        for _ in range(redistribute):
+            victim_client = random.randint(0, len(labels))
+            victim_label = random.randint(0, len(labels[victim_client]))
+
+            # select a client other than the victim
+            lucky_client = victim_client
+            while lucky_client == victim_client:
+                lucky_client = random.randint(0, len(labels))
+            
+            # print(f"{victim_client}->{lucky_client}: {labels[victim_client][victim_label]}")
+            
+            if victim_label in labels[lucky_client]:
+                pass
+            else:
+                # put that lucky label in it
+                labels[lucky_client] = np.append(labels[lucky_client], labels[victim_client][victim_label])
 
     for client in range(nclient):
-        nlabel_for_client = prop[client]
-        labels_local = labels.copy()
-        random.shuffle(labels_local)
-        label_for_client = labels_local[:nlabel_for_client]
+        label_for_client = labels[client]
 
+        # print(label_for_client)
         indices = []
         for lb in label_for_client:
             indices.extend(np.where(tr_set.y == lb)[0])

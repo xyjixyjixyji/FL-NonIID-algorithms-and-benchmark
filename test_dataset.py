@@ -112,13 +112,13 @@ def test_lskew():
 def test_skew():
     print("TEST STARTS")
     # test_load()
-    test_fskew()
+    # test_fskew()
     # test_qskew()
-    # test_lskew()
+    test_lskew()
     print("PASSED")
     print("All Test Passed")
 
 if __name__ == "__main__":
-    setseed(400)
+    setseed(51902191)
     test_skew()
     
