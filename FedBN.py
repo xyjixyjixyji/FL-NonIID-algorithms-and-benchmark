@@ -35,6 +35,11 @@ parameters you HAVE TO set:
 details in args
 """
 
+#
+# COURTESY: PART OF THE CODE ARE REFERENCED FROM THE FOLLOWING LINK
+# https://github.com/med-air/FedBN/blob/master/federated/fed_digits.py
+#
+
 import torch
 import time
 import os
@@ -88,6 +93,7 @@ assert(args.skew in ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_acr
 assert(args.mode in ['fedavg', 'fedprox', 'fedbn'])
 
 setseed(args.seed)
+
 
 def prepare_data(args):
     train_loaders = []
@@ -294,5 +300,3 @@ if __name__ == '__main__':
 
     logfile.flush()
     logfile.close()
-
-
