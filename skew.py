@@ -93,7 +93,7 @@ def quantity_skew(dataset_name,
     for i in range(nclient):
         tr_set, _ = preprocess(dataset_name=dataset_name,
                                indices=indices[i])
-        client2dataset.append(tr_s)
+        client2dataset.append(tr_set)
     
     for i in range(nclient):
         print(f'Client{i} has {len(client2dataset[i])} samples')
@@ -133,7 +133,7 @@ def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5):
 
         tr_set, _ = preprocess(dataset_name=dataset_name,
                                indices=indices)
-        client2dataset.append(tr_s)
+        client2dataset.append(tr_set)
     
     return client2dataset, te_set
     
@@ -174,7 +174,7 @@ def label_skew_by_within_labels(dataset_name, nclient, nlabel=10, alpha=.5):
     for client in range(nclient):
         tr_set, _ = preprocess(dataset_name=dataset_name,
                                indices=label_distribution[client])
-        client2dataset.append(tr_s)
+        client2dataset.append(tr_set)
     
     return client2dataset, te_set
  

@@ -5,13 +5,13 @@
 Federated learning with different aggregation strategy on benchmark exp.
 
 example test command:
-    python FL_tr.py --mode fedbn --model DigitModel --dsetname mnist --skew feat_noise --noise_std 0.5 --nclient 3
+    python FL_tr.py --mode fedbn --model DigitModel --dataset mnist --skew feat_noise --noise_std 0.5 --nclient 3
 
 parameters you HAVE TO set:
 
         mode: fedbn fedprox fed avg
         model: check args.model
-        dsetname: mnist, kmnist, svhn, cifar10 (case sensitive)
+        dataset: mnist, kmnist, svhn, cifar10 (case sensitive)
         skew:
             quantity:
                 - Di_alpha: the parameter of dirichlet distribution
@@ -62,7 +62,7 @@ parser.add_argument('--log_path', type=str, default='../logs/', help='path to sa
 parser.add_argument('--resume', action='store_true', help='resume training from the save path checkpoint')
 
 parser.add_argument('--model', type=str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
-parser.add_argument('--dsetname', type=str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
+parser.add_argument('--dataset', type=str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
 parser.add_argument('--skew', type=str, default='None', help='| none | quantity | feat_filter | feat_noise | label_across | label_within |')
 parser.add_argument('--noise_std', type=float, default=0.5, help='noise level for gaussion noise')
 parser.add_argument('--filter_sz', type=int, default=3, help='filter size for filter')
@@ -75,7 +75,7 @@ args = parser.parse_args()
 
 print(f"args: {args}")
 
-assert(args.dsetname in ['svhn', 'cifar10', 'mnist', 'kmnist'])
+assert(args.dataset in ['svhn', 'cifar10', 'mnist', 'kmnist'])
 assert(args.skew in ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within'])
 assert(args.Fl_size % 2 == 1)
 assert(args.mode in ['fedavg', 'fedprox', 'fedbn'])
@@ -88,17 +88,17 @@ def prepare_data(args):
     tr_sets, te_set = [],[]
         
     if args.skew == 'none':
-        tr_sets, te_set = feature_skew_noise(args.dsetname, args.nclient, 0)
+        tr_sets, te_set = feature_skew_noise(args.dataset, args.nclient, 0)
     elif args.skew == 'quantity':
-        tr_sets, te_set = quantity_skew(args.dsetname, args.nclient, args.Di_alpha)
+        tr_sets, te_set = quantity_skew(args.dataset, args.nclient, args.Di_alpha)
     elif args.skew == 'feat_noise':
-        tr_sets, te_set = feature_skew_noise(args.dsetname, args.nclient, args.noise_std)
+        tr_sets, te_set = feature_skew_noise(args.dataset, args.nclient, args.noise_std)
     elif args.skew == 'feat_filter':
-        tr_sets, te_set = feature_skew_filter(args.dsetname, args.nclient, args.filter_sz)
+        tr_sets, te_set = feature_skew_filter(args.dataset, args.nclient, args.filter_sz)
     elif args.skew == 'label_across':
-        tr_sets, te_set = label_skew_across_labels(args.dsetname, args.nclient, args.nlabel, args.Di_alpha)
+        tr_sets, te_set = label_skew_across_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha)
     elif args.skew == 'within_label':
-        tr_sets, te_set = label_skew_by_within_labels(args.dsetname, args.nclient, args.nlabel, args.Di_alpha)
+        tr_sets, te_set = label_skew_by_within_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha)
     else:
         raise ValueError("UNDEFINED SKEW")
 
