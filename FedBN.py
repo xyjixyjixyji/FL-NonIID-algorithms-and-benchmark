@@ -56,9 +56,9 @@ parser.add_argument('--iters', type=int, default=100, help='iterations for commu
 parser.add_argument('--wk_iters', type=int, default=1, help='optimization iters in local worker between communication')
 parser.add_argument('--mode', type=str, default='fedbn', help='fedavg | fedprox | fedbn')
 parser.add_argument('--mu', type=float, default=1e-2, help='The hyper parameter for fedprox')
-parser.add_argument('--save_path', type=str, default='../checkpoint', help='path to save the checkpoint')
-parser.add_argument('--load_path', type=str, default='../checkpoint', help='path to save the checkpoint')
-parser.add_argument('--log_path', type=str, default='../logs/', help='path to save the checkpoint')
+parser.add_argument('--save_path', type=str, default='./checkpoint', help='path to save the checkpoint')
+parser.add_argument('--load_path', type=str, default='./checkpoint', help='path to save the checkpoint')
+parser.add_argument('--log_path', type=str, default='./logs/', help='path to save the checkpoint')
 parser.add_argument('--resume', action='store_true', help='resume training from the save path checkpoint')
 
 parser.add_argument('--model', type=str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')

@@ -54,7 +54,7 @@ def draw_plot(x_hist,
     In logpos folder, you should have fedbn.log, fedprox.log, fedavg.log
 '''
 parser = argparse.ArgumentParser()
-parser.add_argument("--logpos", type=str, default="./checkpoints")
+parser.add_argument("--logpos", type=str, default="./logs")
 parser.add_argument("--out_dir", type=str, default="./fig_folder")
 args = parser.parse_args()
 
