@@ -107,7 +107,7 @@ def quantity_skew(dataset_name,
 def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5, overlap=True):
     client2dataset = []
 
-    tr_set, te_set = preprocess(dataset_name)
+    TR_set, te_set = preprocess(dataset_name)
 
     nsample = tr_set.y.shape[0]
     labels = random.permutation(nlabel)
@@ -153,7 +153,7 @@ def label_skew_across_labels(dataset_name, nclient, nlabel=10, alpha=0.5, overla
         # print(label_for_client)
         indices = []
         for lb in label_for_client:
-            indices.extend(np.where(tr_set.y == lb)[0])
+            indices.extend(np.where(TR_set.y == lb)[0])
 
         tr_set, _ = preprocess(dataset_name=dataset_name,
                                indices=indices)
