@@ -187,7 +187,7 @@ if __name__ == '__main__':
     log_path = os.path.join(args.log_path, args.model)
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-    logfile = open(os.path.join(log_path,'{}_{}_{}.log'.format(args.mode,args.dataset,args.skew)), 'a')
+    logfile = open(os.path.join(log_path,'{}_{}_{}.txt'.format(args.mode,args.dataset,args.skew)), 'a')
     logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
     logfile.write('===Setting===\n')
     logfile.write('    lr: {}\n'.format(args.lr))
@@ -286,6 +286,7 @@ if __name__ == '__main__':
                 min_test_loss = test_loss
         print(' server | Test  Loss: {:.4f} | Test  Acc: {:.4f}'.format(min_test_loss, max_test_acc))
         logfile.write(' server | Test  Loss: {:.4f} | Test  Acc: {:.4f}\n'.format(min_test_loss, max_test_acc))
+        logfile.flush()
 
     # Save checkpoint
     print(' Saving checkpoints to {}...'.format(SAVE_PATH))
@@ -297,6 +298,5 @@ if __name__ == '__main__':
         torch.save({
             'server_model': server_model.state_dict(),
         }, SAVE_PATH)
-
     logfile.flush()
     logfile.close()
