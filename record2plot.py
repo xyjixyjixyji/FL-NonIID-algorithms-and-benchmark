@@ -2,6 +2,8 @@ import argparse
 import os
 import matplotlib.pyplot as plt
 
+# TODO(Ji-Xinyou): revise the code for parsing new experiment setup
+
 # use this to parse train_loss, other loss is meaning less to be analyzed
 def parse_dict(dict, logpath, keyword):
     '''

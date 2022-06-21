@@ -74,10 +74,14 @@ class KMNIST_Dataset(GeneralDataset):
                                    mean=self.noise_mean,
                                    std=self.noise_std)
 
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         if self.filter:
+            x = x.to(device)
+            y = y.to(device)
             sz = [[1 for _ in range(self.filter_sz)] for _ in range(self.filter_sz)]
             filt = torch.tensor(sz) / (self.filter_sz ** 2)
             filt = filt.expand(3, 3, self.filter_sz, self.filter_sz)
+            filt = filt.to(device)
             x = F.conv2d(x, filt, stride=1, padding=1)
         
         return x, y
