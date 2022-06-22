@@ -1,0 +1,146 @@
+===2022-06-18 19:06:42===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+===2022-06-18 19:07:35===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+===2022-06-18 19:08:54===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:10:09===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:11:18===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:15:54===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:16:26===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:17:00===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+===2022-06-18 19:17:10===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:17:51===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:18:15===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:18:31===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:19:10===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:19:21===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:20:12===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:21:35===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:23:07===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:28:33===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:29:20===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+===2022-06-18 19:36:00===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
+ client 0| Train Loss: 0.1257 | Train Acc: 0.9657
+ client 1| Train Loss: 1.4534 | Train Acc: 0.5313
+===2022-06-19 01:14:22===
+===Setting===
+    lr: 0.01
+    batch: 32
+    iters: 100
+    wk_iters: 1
+============ Train epoch 0 ============
