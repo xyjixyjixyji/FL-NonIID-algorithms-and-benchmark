@@ -79,11 +79,9 @@ class SVHN_Dataset(GeneralDataset):
             x = x.to(device)
             y = y.to(device)
             sz = [[1 for _ in range(self.filter_sz)] for _ in range(self.filter_sz)]
-            filt = torch.tensor(sz) // (self.filter_sz ** 2)
+            filt = torch.tensor(sz) / (self.filter_sz ** 2)
             filt = filt.expand(3, 3, self.filter_sz, self.filter_sz)
             filt.to(device)
-            x = x.view(1,3,32,32)
             x = F.conv2d(x, filt, stride=1, padding=1)
-            x = x.squeeze(0)
         
         return x, y

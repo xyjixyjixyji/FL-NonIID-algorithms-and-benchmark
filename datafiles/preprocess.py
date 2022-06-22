@@ -58,7 +58,7 @@ def preprocess(dataset_name,
                              noise_std=noise_std,
                              filter=filter,
                              filter_sz=filter_sz)
-    
+
     test_set = dataset_func(rootp=rootp,
                             train=False,
                             transform=tf_train,
