@@ -265,6 +265,7 @@ if __name__ == '__main__':
         # aggregation
         if args.mode.lower() == 'fedavg':
             client_weights = [samples[i]/total for i in range(client_num)]
+
         server_model, models = communication(args, server_model, models, client_weights)
         min_test_loss = 1000
         max_test_acc = 0
@@ -272,7 +273,7 @@ if __name__ == '__main__':
         for client_idx in range(client_num):
                 model, train_loader, optimizer = models[client_idx], train_loaders[client_idx], optimizers[client_idx]
                 train_loss, train_acc = test(model, train_loader, loss_fun, device) 
-                print(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}'.format(client_idx ,train_loss, train_acc))
+                print(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}'.format(client_idx, train_loss, train_acc))
                 logfile.write(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}\n'.format(client_idx ,train_loss, train_acc))\
 
         # start testing
