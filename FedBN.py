@@ -198,7 +198,7 @@ if __name__ == '__main__':
     log_path = os.path.join(args.log_path, args.model)
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-    logfile = open(os.path.join(log_path,'{}_{}_{}_{}.txt'.format(args.mode + "Choking" if args.choke else "" ,args.dataset,args.skew,args.nclient)), 'a')
+    logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Choking" if args.choke else "" ,args.dataset,args.skew,args.nclient)), 'a')
     logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
     logfile.write('===Setting===\n')
     logfile.write('    lr: {}\n'.format(args.lr))
