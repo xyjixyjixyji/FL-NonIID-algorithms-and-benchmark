@@ -286,8 +286,7 @@ if __name__ == '__main__':
         for client_idx in range(client_num):
                 model, train_loader, optimizer = models[client_idx], train_loaders[client_idx], optimizers[client_idx]
                 train_loss, train_acc = test(model, train_loader, loss_fun, device) 
-                train_losses.append(train_loss)
-                print(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}'.format(client_idx ,train_loss, train_acc))
+                print(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}'.format(client_idx, train_loss, train_acc))
                 logfile.write(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}\n'.format(client_idx ,train_loss, train_acc))\
 
         # start testing
