@@ -71,7 +71,7 @@ parser.add_argument('--save_path', type=str, default='./checkpoint', help='path 
 parser.add_argument('--load_path', type=str, default='./checkpoint', help='path to save the checkpoint')
 parser.add_argument('--log_path', type=str, default='./logs/', help='path to save the checkpoint')
 parser.add_argument('--resume', action='store_true', help='resume training from the save path checkpoint')
-
+parser.add_argument('--choke', action = 'strore_true', help='choke those bad clients when communicating')
 parser.add_argument('--model', type=str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
 parser.add_argument('--dataset', type=str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
 parser.add_argument('--skew', type=str, default='none', help='| none | quantity | feat_filter | feat_noise | label_across | label_within |')
@@ -145,7 +145,7 @@ def test(model, test_loader, loss_fun, device):
     return test_loss/len(test_loader), correct /len(test_loader.dataset)
 
 ################# Key Function ########################
-def communication(args, server_model, models, client_weights):
+def communication(args, server_model, models, client_weights, train_losses):
     with torch.no_grad():
         # aggregate params
         if args.mode.lower() == 'fedbn':
@@ -158,6 +158,17 @@ def communication(args, server_model, models, client_weights):
                     for client_idx in range(client_num):
                         models[client_idx].state_dict()[key].data.copy_(server_model.state_dict()[key])
         else:
+            if args.choke and len(train_losses)!=0:
+                loss_mean = np.mean(train_losses)
+                loss_std = np.std(train_losses, ddof=1)
+                if loss_std > 0.2:
+                    tmp_total = 0
+                    for client_idx in range(len(client_weights)):
+                        if(train_losses[client_idx]>(loss_mean+loss_std)):
+                            client_weights[client_idx] = 0
+                        else:
+                            tmp_total += client_weights[client_idx]
+                    client_weights = [client_weights[client_idx]/tmp_total for client_idx in range(len(client_weights))]
             for key in server_model.state_dict().keys():
                 # num_batches_tracked is a non trainable LongTensor and
                 # num_batches_tracked are the same for all clients for the given datasets
@@ -187,7 +198,7 @@ if __name__ == '__main__':
     log_path = os.path.join(args.log_path, args.model)
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-    logfile = open(os.path.join(log_path,'{}_{}_{}.txt'.format(args.mode,args.dataset,args.skew)), 'a')
+    logfile = open(os.path.join(log_path,'{}_{}_{}_{}.txt'.format(args.mode + "Choking" if args.choke else "" ,args.dataset,args.skew,args.nclient)), 'a')
     logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
     logfile.write('===Setting===\n')
     logfile.write('    lr: {}\n'.format(args.lr))
@@ -197,7 +208,7 @@ if __name__ == '__main__':
 
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path)
-    SAVE_PATH = os.path.join(args.save_path, '{}'.format(args.mode))
+    SAVE_PATH = os.path.join(args.save_path, '{}_{}_{}.bin'.format(args.mode,args.dataset,args.skew))
    
    
     server_model = eval(args.model)().to(device)
@@ -241,6 +252,7 @@ if __name__ == '__main__':
     else:
         resume_iter = 0
     # start training
+    train_losses = []
     for a_iter in range(resume_iter, args.iters):
         optimizers = [optim.SGD(params=models[idx].parameters(), lr=args.lr) for idx in range(client_num)]
         samples = [0 for i in range(client_num)]
@@ -263,15 +275,18 @@ if __name__ == '__main__':
                     train(model, train_loader, optimizer, loss_fun, client_num, device)
          
         # aggregation
+        client_weights = [1/client_num for i in range(client_num)]
         if args.mode.lower() == 'fedavg':
             client_weights = [samples[i]/total for i in range(client_num)]
-        server_model, models = communication(args, server_model, models, client_weights)
+        server_model, models = communication(args, server_model, models, client_weights, train_losses)
         min_test_loss = 1000
         max_test_acc = 0
         # report after aggregation
+        train_losses = []
         for client_idx in range(client_num):
                 model, train_loader, optimizer = models[client_idx], train_loaders[client_idx], optimizers[client_idx]
                 train_loss, train_acc = test(model, train_loader, loss_fun, device) 
+                train_losses.append(train_loss)
                 print(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}'.format(client_idx ,train_loss, train_acc))
                 logfile.write(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}\n'.format(client_idx ,train_loss, train_acc))\
 
