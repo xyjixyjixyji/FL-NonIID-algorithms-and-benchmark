@@ -71,7 +71,8 @@ parser.add_argument('--save_path', type=str, default='./checkpoint', help='path 
 parser.add_argument('--load_path', type=str, default='./checkpoint', help='path to save the checkpoint')
 parser.add_argument('--log_path', type=str, default='./logs/', help='path to save the checkpoint')
 parser.add_argument('--resume', action='store_true', help='resume training from the save path checkpoint')
-parser.add_argument('--choke', action = 'strore_true', help='choke those bad clients when communicating')
+parser.add_argument('--choke', action = 'store_true', help='choke those bad clients when communicating')
+parser.add_argument('--label', action='store_true', help = 'reweight according to label number in FedBN')
 parser.add_argument('--model', type=str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
 parser.add_argument('--dataset', type=str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
 parser.add_argument('--skew', type=str, default='none', help='| none | quantity | feat_filter | feat_noise | label_across | label_within |')
@@ -82,7 +83,6 @@ parser.add_argument('--overlap', type=bool, default=True, help='If lskew_across 
 parser.add_argument('--nlabel', type=int, default=10, help='number of label for dirichlet label skew')
 parser.add_argument('--nclient', type=int, default=5, help='client number')
 parser.add_argument('--seed', type=int, default=400, help='random seed')
-
 args = parser.parse_args()
 
 print(f"args: {args}")
@@ -110,7 +110,7 @@ def prepare_data(args):
         tr_sets, te_set = feature_skew_filter(args.dataset, args.nclient, args.filter_sz)
     elif args.skew == 'label_across':
         tr_sets, te_set = label_skew_across_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha, args.overlap)
-    elif args.skew == 'within_label':
+    elif args.skew == 'label_within':
         tr_sets, te_set = label_skew_by_within_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha)
     else:
         raise ValueError("UNDEFINED SKEW")
@@ -199,6 +199,8 @@ if __name__ == '__main__':
     if not os.path.exists(log_path):
         os.makedirs(log_path)
     logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Choking" if args.choke else "" ,args.dataset,args.skew,args.nclient)), 'a')
+    if args.label:
+        logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Labeling",args.dataset,args.skew,args.nclient)), 'a')
     logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
     logfile.write('===Setting===\n')
     logfile.write('    lr: {}\n'.format(args.lr))
@@ -216,7 +218,6 @@ if __name__ == '__main__':
 
     # prepare the data
     train_loaders, test_loaders = prepare_data(args)
-    
     # federated setting
     client_num = args.nclient
     client_weights = [1/client_num for i in range(client_num)]
@@ -257,6 +258,7 @@ if __name__ == '__main__':
         optimizers = [optim.SGD(params=models[idx].parameters(), lr=args.lr) for idx in range(client_num)]
         samples = [0 for i in range(client_num)]
         total = 0
+        labels = [0 for i in range(client_num)]
         for wi in range(args.wk_iters):
             print("============ Train epoch {} ============".format(wi + a_iter * args.wk_iters))
             logfile.write("============ Train epoch {} ============\n".format(wi + a_iter * args.wk_iters)) 
@@ -272,12 +274,19 @@ if __name__ == '__main__':
                     if args.mode.lower() == 'fedavg':
                         samples[client_idx] += len(train_loader)
                         total += len(train_loader)
-                    train(model, train_loader, optimizer, loss_fun, client_num, device)
+                    _, _, labels_num = train(model, train_loader, optimizer, loss_fun, client_num, device)
+                    labels[client_idx] = labels_num
+
          
         # aggregation
         client_weights = [1/client_num for i in range(client_num)]
         if args.mode.lower() == 'fedavg':
             client_weights = [samples[i]/total for i in range(client_num)]
+        if args.label:
+            total = 0
+            for i in range(len(labels)):
+                total += labels[i]
+            client_weights = [labels[i]/total for i in range(client_num)]
         server_model, models = communication(args, server_model, models, client_weights, train_losses)
         min_test_loss = 1000
         max_test_acc = 0

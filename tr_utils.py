@@ -5,11 +5,12 @@ def train(model, train_loader, optimizer, loss_fun, client_num, device):
     num_data = 0
     correct = 0
     loss_all = 0
+    labels = []
     train_iter = iter(train_loader)
     for step in range(len(train_iter)):
         optimizer.zero_grad()
         x, y = next(train_iter)
-       
+        labels+=(y.tolist())
         num_data += y.size(0)
         x = x.to(device).float()
         y = y.to(device).long()
@@ -22,7 +23,9 @@ def train(model, train_loader, optimizer, loss_fun, client_num, device):
 
         pred = output.data.max(1)[1]
         correct += pred.eq(y.view(-1)).sum().item()
-    return loss_all/len(train_iter), correct/num_data
+    labels = set(labels)
+    labels_num = len(labels)
+    return loss_all/len(train_iter), correct/num_data, labels_num
 
 def train_fedprox(args, model, server_model, train_loader, optimizer, loss_fun, client_num, device):
     model.train()
