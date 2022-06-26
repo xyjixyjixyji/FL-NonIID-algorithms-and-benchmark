@@ -148,11 +148,132 @@ def draw_per_dataset_per_algo():
                                acc_history_la,
                                acc_history_lw],
                       labels=["None", "Quantity", "Filter", "Noise", "Label_across", "Label_within"],
-                    #   labels=["None", "Quantity", "Filter", "Label_across", "Label_within"],
                       title=f"Test Accuracy History on {dataset} for {algo}",
                       x_label="Global Epochs",
                       y_label="Accuracy (%)",
                       name=os.path.join('skew_comparison', f'Tacc_{algo}_{dataset}.png'))
 
-draw_per_dataset_per_skew()
-draw_per_dataset_per_algo()
+def draw_lbfedbn():
+    _skews = ['label_across', 'label_within']
+    for dataset in datasets:
+        for skew in _skews:
+            logname_fedbn = f'fedbn_{dataset}_{skew}_{nclient}_test.log'
+            logname_fedprox = f'fedprox_{dataset}_{skew}_{nclient}_test.log'
+            logname_fedavg = f'fedavg_{dataset}_{skew}_{nclient}_test.log'
+            logname_lbfedbn = f'fedbnLabel_{dataset}_{skew}_{nclient}_test.log'
+
+            logfile_fedbn = os.path.join(folder, logname_fedbn)
+            logfile_fedprox = os.path.join(folder, logname_fedprox)
+            logfile_fedavg = os.path.join(folder, logname_fedavg)
+            logfile_lbfedbn = os.path.join(folder, logname_lbfedbn)
+
+            # loss_history_{algorithm}: has key(client 0, client1, client2 and client 3)
+            # we average the loss history of nclient to be our final loss history
+            loss_history_fedbn = parse_dict(logfile_fedbn, "Train Loss: ")
+            loss_history_fedbn = average_loss_history(loss_history_fedbn)
+            acc_history_fedbn = parse_dict(logfile_fedbn, "Test  Acc: ")['server']
+
+            loss_history_fedprox = parse_dict(logfile_fedprox, "Train Loss: ")
+            loss_history_fedprox = average_loss_history(loss_history_fedprox)
+            acc_history_fedprox = parse_dict(logfile_fedprox, "Test  Acc: ")['server']
+
+            loss_history_fedavg = parse_dict(logfile_fedavg, "Train Loss: ")
+            loss_history_fedavg = average_loss_history(loss_history_fedavg)
+            acc_history_fedavg = parse_dict(logfile_fedavg, "Test  Acc: ")['server']
+
+            loss_history_lbfedbn = parse_dict(logfile_lbfedbn, "Train Loss: ")
+            loss_history_lbfedbn = average_loss_history(loss_history_lbfedbn)
+            acc_history_lbfedbn = parse_dict(logfile_lbfedbn, "Test  Acc: ")['server']
+
+            nepochs = range(1, len(loss_history_fedavg) + 1)
+
+            # draw_plot(x_hist=nepochs,
+            #         y_hists=[loss_history_fedavg,
+            #                 loss_history_fedprox,
+            #                 loss_history_fedbn],
+            #         labels=["FedAvg", "FedProx", "FedBN"],
+            #         title=f"Loss History on {dataset}_{skew} {nclient} clients",
+            #         x_label="Global Epochs",
+            #         y_label="Loss",
+            #         name=f'Loss_{dataset}_{skew}.png')
+
+            draw_plot(x_hist=nepochs,
+                    y_hists=[acc_history_fedavg,
+                            acc_history_fedprox,
+                            acc_history_fedbn,
+                            acc_history_lbfedbn],
+                    labels=["FedAvg", "FedProx", "FedBN", "LWFedBN"],
+                    title=f"Test Accuracy History on {dataset}_{skew} {nclient} clients",
+                    x_label="Global Epochs",
+                    y_label="Accuracy (%)",
+                    name=os.path.join('fedbnlabel', f'Tacc_{dataset}_{skew}.png'))
+
+def draw_choke():
+    __folder = './log_choke'
+    __skews = ['feat_filter']
+    __datasets = ['kmnist', 'mnist']
+    for dataset in __datasets:
+        for skew in __skews:
+            logname_fedbn = f'fedbn_{dataset}_{skew}_{nclient}_test.log'
+            logname_fedprox = f'fedprox_{dataset}_{skew}_{nclient}_test.log'
+            logname_fedavg = f'fedavg_{dataset}_{skew}_{nclient}_test.log'
+            logname_cavg = f'fedavgChoking_{dataset}_{skew}_{nclient}_test.log'
+            logname_cprox = f'fedproxChoking_{dataset}_{skew}_{nclient}_test.log'
+
+            logfile_fedbn = os.path.join(__folder, logname_fedbn)
+            logfile_fedprox = os.path.join(__folder, logname_fedprox)
+            logfile_fedavg = os.path.join(__folder, logname_fedavg)
+            logfile_cavg = os.path.join(__folder, logname_cavg)
+            logfile_cprox = os.path.join(__folder, logname_cprox)
+
+            # loss_history_{algorithm}: has key(client 0, client1, client2 and client 3)
+            # we average the loss history of nclient to be our final loss history
+            loss_history_fedbn = parse_dict(logfile_fedbn, "Train Loss: ")
+            loss_history_fedbn = average_loss_history(loss_history_fedbn)
+            acc_history_fedbn = parse_dict(logfile_fedbn, "Test  Acc: ")['server']
+
+            loss_history_fedprox = parse_dict(logfile_fedprox, "Train Loss: ")
+            loss_history_fedprox = average_loss_history(loss_history_fedprox)
+            acc_history_fedprox = parse_dict(logfile_fedprox, "Test  Acc: ")['server']
+
+            loss_history_fedavg = parse_dict(logfile_fedavg, "Train Loss: ")
+            loss_history_fedavg = average_loss_history(loss_history_fedavg)
+            acc_history_fedavg = parse_dict(logfile_fedavg, "Test  Acc: ")['server']
+
+            loss_history_cavg = parse_dict(logfile_cavg, "Train Loss: ")
+            loss_history_cavg = average_loss_history(loss_history_cavg)
+            acc_history_cavg = parse_dict(logfile_cavg, "Test  Acc: ")['server']
+
+            loss_history_cprox = parse_dict(logfile_cprox, "Train Loss: ")
+            loss_history_cprox = average_loss_history(loss_history_cprox)
+            acc_history_cprox = parse_dict(logfile_cprox, "Test  Acc: ")['server']
+
+            nepochs = range(1, len(loss_history_fedavg) + 1)
+
+            # draw_plot(x_hist=nepochs,
+            #         y_hists=[loss_history_fedavg,
+            #                 loss_history_fedprox,
+            #                 loss_history_fedbn],
+            #         labels=["FedAvg", "FedProx", "FedBN"],
+            #         title=f"Loss History on {dataset}_{skew} {nclient} clients",
+            #         x_label="Global Epochs",
+            #         y_label="Loss",
+            #         name=f'Loss_{dataset}_{skew}.png')
+
+            draw_plot(x_hist=nepochs,
+                    y_hists=[acc_history_fedavg,
+                            acc_history_fedprox,
+                            acc_history_fedbn,
+                            acc_history_cavg,
+                            acc_history_cprox,
+                            ],
+                    labels=["FedAvg", "FedProx", "FedBN", "FedAvg-Choked", "FedProx-Choked"],
+                    title=f"Test Accuracy History on {dataset}_{skew} {nclient} clients",
+                    x_label="Global Epochs",
+                    y_label="Accuracy (%)",
+                    name=os.path.join('choke', f'Tacc_{dataset}_{skew}.png'))
+
+# draw_per_dataset_per_skew()
+# draw_per_dataset_per_algo()
+# draw_lbfedbn()
+draw_choke()
