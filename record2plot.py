@@ -2,14 +2,6 @@ import argparse
 import os
 import matplotlib.pyplot as plt
 
-# TODOS: DELETE MINLEN WHEN ALL LOGS ARE RUN UNDER 50 EPOCHES
-# TODOS: DELETE MINLEN WHEN ALL LOGS ARE RUN UNDER 50 EPOCHES
-# TODOS: DELETE MINLEN WHEN ALL LOGS ARE RUN UNDER 50 EPOCHES
-# TODOS: DELETE MINLEN WHEN ALL LOGS ARE RUN UNDER 50 EPOCHES
-# TODOS: DELETE MINLEN WHEN ALL LOGS ARE RUN UNDER 50 EPOCHES
-# TODOS: DELETE MINLEN WHEN ALL LOGS ARE RUN UNDER 50 EPOCHES
-# TODOS: DELETE MINLEN WHEN ALL LOGS ARE RUN UNDER 50 EPOCHES
-
 # use this to parse train_loss, other loss is meaning less to be analyzed
 def parse_dict(logpath, keyword):
     '''
@@ -72,7 +64,7 @@ def draw_plot(x_hist,
 
 folder = 'logs_fedbn_fedprox_fedavg/DigitModel'
 datasets = ['mnist', 'kmnist', 'svhn', 'cifar10']
-skews = ['quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within']
+skews = ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within']
 nclient = '4'
 
 def draw_per_dataset_per_skew():
@@ -120,7 +112,7 @@ def draw_per_dataset_per_skew():
                     title=f"Test Accuracy History on {dataset}_{skew} {nclient} clients",
                     x_label="Global Epochs",
                     y_label="Accuracy (%)",
-                    name=f'Tacc_{dataset}_{skew}.png')
+                    name=os.path.join('algo_comparison', f'Tacc_{dataset}_{skew}.png'))
 
 def draw_per_dataset_per_algo():
     for dataset in datasets:
@@ -160,6 +152,7 @@ def draw_per_dataset_per_algo():
                       title=f"Test Accuracy History on {dataset} for {algo}",
                       x_label="Global Epochs",
                       y_label="Accuracy (%)",
-                      name=f'Tacc_{algo}_{dataset}.png')
+                      name=os.path.join('skew_comparison', f'Tacc_{algo}_{dataset}.png'))
 
+draw_per_dataset_per_skew()
 draw_per_dataset_per_algo()
