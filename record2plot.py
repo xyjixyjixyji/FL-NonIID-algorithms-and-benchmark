@@ -73,10 +73,12 @@ def draw_per_dataset_per_skew():
             logname_fedbn = f'fedbn_{dataset}_{skew}_{nclient}_test.log'
             logname_fedprox = f'fedprox_{dataset}_{skew}_{nclient}_test.log'
             logname_fedavg = f'fedavg_{dataset}_{skew}_{nclient}_test.log'
+            logname_moon = f'moon_{dataset}_{skew}_{nclient}_test.log'
 
             logfile_fedbn = os.path.join(folder, logname_fedbn)
             logfile_fedprox = os.path.join(folder, logname_fedprox)
             logfile_fedavg = os.path.join(folder, logname_fedavg)
+            logfile_moon = os.path.join(folder, logname_moon)
 
             # loss_history_{algorithm}: has key(client 0, client1, client2 and client 3)
             # we average the loss history of nclient to be our final loss history
@@ -91,6 +93,10 @@ def draw_per_dataset_per_skew():
             loss_history_fedavg = parse_dict(logfile_fedavg, "Train Loss: ")
             loss_history_fedavg = average_loss_history(loss_history_fedavg)
             acc_history_fedavg = parse_dict(logfile_fedavg, "Test  Acc: ")['server']
+
+            # loss_history_moon = parse_dict(logfile_moon, "Train Loss: ")
+            # loss_history_moon = average_loss_history(loss_history_moon)
+            acc_history_moon = parse_dict(logfile_moon, "Test  Acc: ")['server']
 
             nepochs = range(1, len(loss_history_fedavg) + 1)
 
@@ -107,16 +113,18 @@ def draw_per_dataset_per_skew():
             draw_plot(x_hist=nepochs,
                     y_hists=[acc_history_fedavg,
                             acc_history_fedprox,
-                            acc_history_fedbn],
-                    labels=["FedAvg", "FedProx", "FedBN"],
+                            acc_history_fedbn,
+                            acc_history_moon,
+                            ],
+                    labels=["FedAvg", "FedProx", "FedBN", "MOON"],
                     title=f"Test Accuracy History on {dataset}_{skew} {nclient} clients",
                     x_label="Global Epochs",
                     y_label="Accuracy (%)",
-                    name=os.path.join('algo_comparison', f'Tacc_{dataset}_{skew}.png'))
+                    name=os.path.join('algo_comp', f'Tacc_{dataset}_{skew}.png'))
 
 def draw_per_dataset_per_algo():
     for dataset in datasets:
-        for algo in ['fedbn', 'fedprox', 'fedavg']:
+        for algo in ['fedbn', 'fedprox', 'fedavg', 'moon']:
             logname_none = f'{algo}_{dataset}_none_{nclient}_test.log'
             logname_quantity = f'{algo}_{dataset}_quantity_{nclient}_test.log'
             logname_feat_filter = f'{algo}_{dataset}_feat_filter_{nclient}_test.log'
@@ -151,7 +159,7 @@ def draw_per_dataset_per_algo():
                       title=f"Test Accuracy History on {dataset} for {algo}",
                       x_label="Global Epochs",
                       y_label="Accuracy (%)",
-                      name=os.path.join('skew_comparison', f'Tacc_{algo}_{dataset}.png'))
+                      name=os.path.join('skew_comp', f'Tacc_{algo}_{dataset}.png'))
 
 def draw_lbfedbn():
     _skews = ['label_across', 'label_within']
@@ -273,7 +281,7 @@ def draw_choke():
                     y_label="Accuracy (%)",
                     name=os.path.join('choke', f'Tacc_{dataset}_{skew}.png'))
 
-# draw_per_dataset_per_skew()
+draw_per_dataset_per_skew()
 # draw_per_dataset_per_algo()
 # draw_lbfedbn()
-draw_choke()
+# draw_choke()
