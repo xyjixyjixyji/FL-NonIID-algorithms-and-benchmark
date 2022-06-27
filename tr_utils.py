@@ -5,12 +5,11 @@ def train(model, train_loader, optimizer, loss_fun, client_num, device):
     num_data = 0
     correct = 0
     loss_all = 0
-    labels = []
     train_iter = iter(train_loader)
     for step in range(len(train_iter)):
         optimizer.zero_grad()
         x, y = next(train_iter)
-        labels+=(y.tolist())
+       
         num_data += y.size(0)
         x = x.to(device).float()
         y = y.to(device).long()
@@ -23,9 +22,34 @@ def train(model, train_loader, optimizer, loss_fun, client_num, device):
 
         pred = output.data.max(1)[1]
         correct += pred.eq(y.view(-1)).sum().item()
-    labels = set(labels)
-    labels_num = len(labels)
-    return loss_all/len(train_iter), correct/num_data, labels_num
+    return loss_all/len(train_iter), correct/num_data
+
+def train_LW(model, train_loader, optimizer, loss_fun, client_num, device,args):
+    model.train()
+    num_data = 0
+    correct = 0
+    loss_all = 0
+    labels = torch.tensor([0 for i in range(args.nlabel)])
+    train_iter = iter(train_loader)
+    for step in range(len(train_iter)):
+        optimizer.zero_grad()
+        x, y = next(train_iter)
+        labels = torch.add(labels,torch.sum(y,dim=0))
+        num_data += y.size(0)
+        x = x.to(device).float()
+        y = y.to(device).long()
+        output = model(x)
+
+        loss = loss_fun(output, y)
+        loss.backward()
+        loss_all += loss.item()
+        optimizer.step()
+
+        pred = output.data.max(1)[1]
+        correct += pred.eq(y.view(-1)).sum().item()
+    # labels = set(labels)
+    # labels_num = len(labels)
+    return loss_all/len(train_iter), correct/num_data, labels
 
 def train_fedprox(args, model, server_model, train_loader, optimizer, loss_fun, client_num, device):
     model.train()

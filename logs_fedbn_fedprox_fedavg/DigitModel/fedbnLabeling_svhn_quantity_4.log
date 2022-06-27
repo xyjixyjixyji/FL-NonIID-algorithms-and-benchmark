@@ -1,0 +1,606 @@
+===2022-06-27 10:34:25===
+===Setting===
+    lr: 0.0001
+    batch: 32
+    iters: 50
+    wk_iters: 3
+============ Train epoch 0 ============
+============ Train epoch 1 ============
+============ Train epoch 2 ============
+ client 0| Train Loss: 1.4709 | Train Acc: 0.5997
+ client 1| Train Loss: 2.2431 | Train Acc: 0.2807
+ client 2| Train Loss: 1.7005 | Train Acc: 0.4758
+ client 3| Train Loss: 1.4474 | Train Acc: 0.6059
+ client 0| Test  Loss: 1.4750 | Test  Acc: 0.5973
+ client 1| Test  Loss: 2.2420 | Test  Acc: 0.2599
+ client 2| Test  Loss: 1.6825 | Test  Acc: 0.4899
+ client 3| Test  Loss: 1.4587 | Test  Acc: 0.5974
+ server | Test  Loss: 1.4587 | Test  Acc: 0.5974
+============ Train epoch 3 ============
+============ Train epoch 4 ============
+============ Train epoch 5 ============
+ client 0| Train Loss: 1.0107 | Train Acc: 0.7576
+ client 1| Train Loss: 1.6456 | Train Acc: 0.5789
+ client 2| Train Loss: 1.1376 | Train Acc: 0.6829
+ client 3| Train Loss: 0.9797 | Train Acc: 0.7586
+ client 0| Test  Loss: 1.0253 | Test  Acc: 0.7490
+ client 1| Test  Loss: 1.5850 | Test  Acc: 0.6028
+ client 2| Test  Loss: 1.1260 | Test  Acc: 0.6926
+ client 3| Test  Loss: 1.0095 | Test  Acc: 0.7389
+ server | Test  Loss: 1.0253 | Test  Acc: 0.7490
+============ Train epoch 6 ============
+============ Train epoch 7 ============
+============ Train epoch 8 ============
+ client 0| Train Loss: 0.7729 | Train Acc: 0.8153
+ client 1| Train Loss: 0.9493 | Train Acc: 0.7544
+ client 2| Train Loss: 0.8479 | Train Acc: 0.7805
+ client 3| Train Loss: 0.7602 | Train Acc: 0.8190
+ client 0| Test  Loss: 0.7950 | Test  Acc: 0.8040
+ client 1| Test  Loss: 0.9225 | Test  Acc: 0.7686
+ client 2| Test  Loss: 0.8404 | Test  Acc: 0.7855
+ client 3| Test  Loss: 0.7925 | Test  Acc: 0.8031
+ server | Test  Loss: 0.7950 | Test  Acc: 0.8040
+============ Train epoch 9 ============
+============ Train epoch 10 ============
+============ Train epoch 11 ============
+ client 0| Train Loss: 0.6483 | Train Acc: 0.8407
+ client 1| Train Loss: 0.7482 | Train Acc: 0.8304
+ client 2| Train Loss: 0.7026 | Train Acc: 0.8160
+ client 3| Train Loss: 0.6299 | Train Acc: 0.8486
+ client 0| Test  Loss: 0.6816 | Test  Acc: 0.8240
+ client 1| Test  Loss: 0.7095 | Test  Acc: 0.8190
+ client 2| Test  Loss: 0.6997 | Test  Acc: 0.8180
+ client 3| Test  Loss: 0.6778 | Test  Acc: 0.8267
+ server | Test  Loss: 0.6778 | Test  Acc: 0.8267
+============ Train epoch 12 ============
+============ Train epoch 13 ============
+============ Train epoch 14 ============
+ client 0| Train Loss: 0.5699 | Train Acc: 0.8544
+ client 1| Train Loss: 0.6222 | Train Acc: 0.8596
+ client 2| Train Loss: 0.6171 | Train Acc: 0.8343
+ client 3| Train Loss: 0.5490 | Train Acc: 0.8629
+ client 0| Test  Loss: 0.6049 | Test  Acc: 0.8395
+ client 1| Test  Loss: 0.6158 | Test  Acc: 0.8396
+ client 2| Test  Loss: 0.6184 | Test  Acc: 0.8367
+ client 3| Test  Loss: 0.5993 | Test  Acc: 0.8430
+ server | Test  Loss: 0.5993 | Test  Acc: 0.8430
+============ Train epoch 15 ============
+============ Train epoch 16 ============
+============ Train epoch 17 ============
+ client 0| Train Loss: 0.5120 | Train Acc: 0.8683
+ client 1| Train Loss: 0.5901 | Train Acc: 0.8480
+ client 2| Train Loss: 0.5695 | Train Acc: 0.8448
+ client 3| Train Loss: 0.4961 | Train Acc: 0.8717
+ client 0| Test  Loss: 0.5560 | Test  Acc: 0.8501
+ client 1| Test  Loss: 0.5628 | Test  Acc: 0.8485
+ client 2| Test  Loss: 0.5704 | Test  Acc: 0.8410
+ client 3| Test  Loss: 0.5546 | Test  Acc: 0.8509
+ server | Test  Loss: 0.5546 | Test  Acc: 0.8509
+============ Train epoch 18 ============
+============ Train epoch 19 ============
+============ Train epoch 20 ============
+ client 0| Train Loss: 0.4712 | Train Acc: 0.8754
+ client 1| Train Loss: 0.5312 | Train Acc: 0.8655
+ client 2| Train Loss: 0.5198 | Train Acc: 0.8610
+ client 3| Train Loss: 0.4566 | Train Acc: 0.8849
+ client 0| Test  Loss: 0.5284 | Test  Acc: 0.8558
+ client 1| Test  Loss: 0.5285 | Test  Acc: 0.8558
+ client 2| Test  Loss: 0.5306 | Test  Acc: 0.8538
+ client 3| Test  Loss: 0.5263 | Test  Acc: 0.8588
+ server | Test  Loss: 0.5263 | Test  Acc: 0.8588
+============ Train epoch 21 ============
+============ Train epoch 22 ============
+============ Train epoch 23 ============
+ client 0| Train Loss: 0.4416 | Train Acc: 0.8868
+ client 1| Train Loss: 0.5087 | Train Acc: 0.8596
+ client 2| Train Loss: 0.4897 | Train Acc: 0.8652
+ client 3| Train Loss: 0.4203 | Train Acc: 0.8904
+ client 0| Test  Loss: 0.5030 | Test  Acc: 0.8621
+ client 1| Test  Loss: 0.5019 | Test  Acc: 0.8614
+ client 2| Test  Loss: 0.5015 | Test  Acc: 0.8588
+ client 3| Test  Loss: 0.4970 | Test  Acc: 0.8638
+ server | Test  Loss: 0.4970 | Test  Acc: 0.8638
+============ Train epoch 24 ============
+============ Train epoch 25 ============
+============ Train epoch 26 ============
+ client 0| Train Loss: 0.4163 | Train Acc: 0.8910
+ client 1| Train Loss: 0.4770 | Train Acc: 0.8596
+ client 2| Train Loss: 0.4661 | Train Acc: 0.8746
+ client 3| Train Loss: 0.3972 | Train Acc: 0.8924
+ client 0| Test  Loss: 0.4838 | Test  Acc: 0.8653
+ client 1| Test  Loss: 0.4802 | Test  Acc: 0.8648
+ client 2| Test  Loss: 0.4843 | Test  Acc: 0.8644
+ client 3| Test  Loss: 0.4747 | Test  Acc: 0.8645
+ server | Test  Loss: 0.4838 | Test  Acc: 0.8653
+============ Train epoch 27 ============
+============ Train epoch 28 ============
+============ Train epoch 29 ============
+ client 0| Train Loss: 0.3927 | Train Acc: 0.8972
+ client 1| Train Loss: 0.4798 | Train Acc: 0.8713
+ client 2| Train Loss: 0.4503 | Train Acc: 0.8746
+ client 3| Train Loss: 0.3785 | Train Acc: 0.9012
+ client 0| Test  Loss: 0.4648 | Test  Acc: 0.8700
+ client 1| Test  Loss: 0.4632 | Test  Acc: 0.8705
+ client 2| Test  Loss: 0.4661 | Test  Acc: 0.8679
+ client 3| Test  Loss: 0.4641 | Test  Acc: 0.8707
+ server | Test  Loss: 0.4641 | Test  Acc: 0.8707
+============ Train epoch 30 ============
+============ Train epoch 31 ============
+============ Train epoch 32 ============
+ client 0| Train Loss: 0.3772 | Train Acc: 0.9014
+ client 1| Train Loss: 0.4371 | Train Acc: 0.8596
+ client 2| Train Loss: 0.4308 | Train Acc: 0.8799
+ client 3| Train Loss: 0.3541 | Train Acc: 0.9048
+ client 0| Test  Loss: 0.4533 | Test  Acc: 0.8745
+ client 1| Test  Loss: 0.4502 | Test  Acc: 0.8738
+ client 2| Test  Loss: 0.4533 | Test  Acc: 0.8702
+ client 3| Test  Loss: 0.4458 | Test  Acc: 0.8744
+ server | Test  Loss: 0.4533 | Test  Acc: 0.8745
+============ Train epoch 33 ============
+============ Train epoch 34 ============
+============ Train epoch 35 ============
+ client 0| Train Loss: 0.3587 | Train Acc: 0.9065
+ client 1| Train Loss: 0.4009 | Train Acc: 0.8772
+ client 2| Train Loss: 0.4157 | Train Acc: 0.8824
+ client 3| Train Loss: 0.3418 | Train Acc: 0.9080
+ client 0| Test  Loss: 0.4385 | Test  Acc: 0.8781
+ client 1| Test  Loss: 0.4369 | Test  Acc: 0.8751
+ client 2| Test  Loss: 0.4392 | Test  Acc: 0.8747
+ client 3| Test  Loss: 0.4354 | Test  Acc: 0.8770
+ server | Test  Loss: 0.4385 | Test  Acc: 0.8781
+============ Train epoch 36 ============
+============ Train epoch 37 ============
+============ Train epoch 38 ============
+ client 0| Train Loss: 0.3408 | Train Acc: 0.9109
+ client 1| Train Loss: 0.4083 | Train Acc: 0.8830
+ client 2| Train Loss: 0.4076 | Train Acc: 0.8869
+ client 3| Train Loss: 0.3280 | Train Acc: 0.9117
+ client 0| Test  Loss: 0.4258 | Test  Acc: 0.8816
+ client 1| Test  Loss: 0.4291 | Test  Acc: 0.8805
+ client 2| Test  Loss: 0.4314 | Test  Acc: 0.8765
+ client 3| Test  Loss: 0.4275 | Test  Acc: 0.8789
+ server | Test  Loss: 0.4258 | Test  Acc: 0.8816
+============ Train epoch 39 ============
+============ Train epoch 40 ============
+============ Train epoch 41 ============
+ client 0| Train Loss: 0.3292 | Train Acc: 0.9129
+ client 1| Train Loss: 0.3711 | Train Acc: 0.8889
+ client 2| Train Loss: 0.3927 | Train Acc: 0.8908
+ client 3| Train Loss: 0.3092 | Train Acc: 0.9204
+ client 0| Test  Loss: 0.4166 | Test  Acc: 0.8816
+ client 1| Test  Loss: 0.4171 | Test  Acc: 0.8826
+ client 2| Test  Loss: 0.4172 | Test  Acc: 0.8794
+ client 3| Test  Loss: 0.4165 | Test  Acc: 0.8834
+ server | Test  Loss: 0.4165 | Test  Acc: 0.8834
+============ Train epoch 42 ============
+============ Train epoch 43 ============
+============ Train epoch 44 ============
+ client 0| Train Loss: 0.3179 | Train Acc: 0.9172
+ client 1| Train Loss: 0.4486 | Train Acc: 0.9006
+ client 2| Train Loss: 0.3790 | Train Acc: 0.8922
+ client 3| Train Loss: 0.3000 | Train Acc: 0.9219
+ client 0| Test  Loss: 0.4104 | Test  Acc: 0.8841
+ client 1| Test  Loss: 0.4117 | Test  Acc: 0.8849
+ client 2| Test  Loss: 0.4071 | Test  Acc: 0.8834
+ client 3| Test  Loss: 0.4099 | Test  Acc: 0.8831
+ server | Test  Loss: 0.4117 | Test  Acc: 0.8849
+============ Train epoch 45 ============
+============ Train epoch 46 ============
+============ Train epoch 47 ============
+ client 0| Train Loss: 0.3045 | Train Acc: 0.9214
+ client 1| Train Loss: 0.3566 | Train Acc: 0.9123
+ client 2| Train Loss: 0.3764 | Train Acc: 0.8954
+ client 3| Train Loss: 0.2856 | Train Acc: 0.9271
+ client 0| Test  Loss: 0.4017 | Test  Acc: 0.8862
+ client 1| Test  Loss: 0.4021 | Test  Acc: 0.8864
+ client 2| Test  Loss: 0.4049 | Test  Acc: 0.8855
+ client 3| Test  Loss: 0.4015 | Test  Acc: 0.8869
+ server | Test  Loss: 0.4015 | Test  Acc: 0.8869
+============ Train epoch 48 ============
+============ Train epoch 49 ============
+============ Train epoch 50 ============
+ client 0| Train Loss: 0.2967 | Train Acc: 0.9225
+ client 1| Train Loss: 0.3559 | Train Acc: 0.9006
+ client 2| Train Loss: 0.3777 | Train Acc: 0.8922
+ client 3| Train Loss: 0.2776 | Train Acc: 0.9261
+ client 0| Test  Loss: 0.3959 | Test  Acc: 0.8865
+ client 1| Test  Loss: 0.3951 | Test  Acc: 0.8867
+ client 2| Test  Loss: 0.4018 | Test  Acc: 0.8830
+ client 3| Test  Loss: 0.3955 | Test  Acc: 0.8868
+ server | Test  Loss: 0.3955 | Test  Acc: 0.8868
+============ Train epoch 51 ============
+============ Train epoch 52 ============
+============ Train epoch 53 ============
+ client 0| Train Loss: 0.2859 | Train Acc: 0.9256
+ client 1| Train Loss: 0.3892 | Train Acc: 0.8947
+ client 2| Train Loss: 0.3679 | Train Acc: 0.8971
+ client 3| Train Loss: 0.2645 | Train Acc: 0.9338
+ client 0| Test  Loss: 0.3898 | Test  Acc: 0.8886
+ client 1| Test  Loss: 0.3919 | Test  Acc: 0.8883
+ client 2| Test  Loss: 0.3951 | Test  Acc: 0.8869
+ client 3| Test  Loss: 0.3890 | Test  Acc: 0.8897
+ server | Test  Loss: 0.3890 | Test  Acc: 0.8897
+============ Train epoch 54 ============
+============ Train epoch 55 ============
+============ Train epoch 56 ============
+ client 0| Train Loss: 0.2739 | Train Acc: 0.9310
+ client 1| Train Loss: 0.3397 | Train Acc: 0.9123
+ client 2| Train Loss: 0.3578 | Train Acc: 0.8992
+ client 3| Train Loss: 0.2550 | Train Acc: 0.9361
+ client 0| Test  Loss: 0.3840 | Test  Acc: 0.8910
+ client 1| Test  Loss: 0.3855 | Test  Acc: 0.8903
+ client 2| Test  Loss: 0.3889 | Test  Acc: 0.8883
+ client 3| Test  Loss: 0.3824 | Test  Acc: 0.8911
+ server | Test  Loss: 0.3824 | Test  Acc: 0.8911
+============ Train epoch 57 ============
+============ Train epoch 58 ============
+============ Train epoch 59 ============
+ client 0| Train Loss: 0.2639 | Train Acc: 0.9332
+ client 1| Train Loss: 0.3300 | Train Acc: 0.9181
+ client 2| Train Loss: 0.3476 | Train Acc: 0.9013
+ client 3| Train Loss: 0.2443 | Train Acc: 0.9393
+ client 0| Test  Loss: 0.3775 | Test  Acc: 0.8915
+ client 1| Test  Loss: 0.3771 | Test  Acc: 0.8915
+ client 2| Test  Loss: 0.3789 | Test  Acc: 0.8907
+ client 3| Test  Loss: 0.3795 | Test  Acc: 0.8921
+ server | Test  Loss: 0.3795 | Test  Acc: 0.8921
+============ Train epoch 60 ============
+============ Train epoch 61 ============
+============ Train epoch 62 ============
+ client 0| Train Loss: 0.2606 | Train Acc: 0.9349
+ client 1| Train Loss: 0.4006 | Train Acc: 0.9181
+ client 2| Train Loss: 0.3419 | Train Acc: 0.9024
+ client 3| Train Loss: 0.2393 | Train Acc: 0.9404
+ client 0| Test  Loss: 0.3787 | Test  Acc: 0.8929
+ client 1| Test  Loss: 0.3775 | Test  Acc: 0.8928
+ client 2| Test  Loss: 0.3762 | Test  Acc: 0.8923
+ client 3| Test  Loss: 0.3764 | Test  Acc: 0.8932
+ server | Test  Loss: 0.3764 | Test  Acc: 0.8932
+============ Train epoch 63 ============
+============ Train epoch 64 ============
+============ Train epoch 65 ============
+ client 0| Train Loss: 0.2506 | Train Acc: 0.9362
+ client 1| Train Loss: 0.3425 | Train Acc: 0.9064
+ client 2| Train Loss: 0.3362 | Train Acc: 0.9027
+ client 3| Train Loss: 0.2284 | Train Acc: 0.9447
+ client 0| Test  Loss: 0.3693 | Test  Acc: 0.8929
+ client 1| Test  Loss: 0.3694 | Test  Acc: 0.8945
+ client 2| Test  Loss: 0.3698 | Test  Acc: 0.8928
+ client 3| Test  Loss: 0.3682 | Test  Acc: 0.8958
+ server | Test  Loss: 0.3682 | Test  Acc: 0.8958
+============ Train epoch 66 ============
+============ Train epoch 67 ============
+============ Train epoch 68 ============
+ client 0| Train Loss: 0.2404 | Train Acc: 0.9418
+ client 1| Train Loss: 0.3768 | Train Acc: 0.9123
+ client 2| Train Loss: 0.3320 | Train Acc: 0.9038
+ client 3| Train Loss: 0.2203 | Train Acc: 0.9468
+ client 0| Test  Loss: 0.3658 | Test  Acc: 0.8959
+ client 1| Test  Loss: 0.3696 | Test  Acc: 0.8952
+ client 2| Test  Loss: 0.3663 | Test  Acc: 0.8951
+ client 3| Test  Loss: 0.3652 | Test  Acc: 0.8953
+ server | Test  Loss: 0.3658 | Test  Acc: 0.8959
+============ Train epoch 69 ============
+============ Train epoch 70 ============
+============ Train epoch 71 ============
+ client 0| Train Loss: 0.2385 | Train Acc: 0.9422
+ client 1| Train Loss: 0.3252 | Train Acc: 0.9240
+ client 2| Train Loss: 0.3283 | Train Acc: 0.9070
+ client 3| Train Loss: 0.2118 | Train Acc: 0.9477
+ client 0| Test  Loss: 0.3688 | Test  Acc: 0.8945
+ client 1| Test  Loss: 0.3605 | Test  Acc: 0.8972
+ client 2| Test  Loss: 0.3625 | Test  Acc: 0.8952
+ client 3| Test  Loss: 0.3588 | Test  Acc: 0.8963
+ server | Test  Loss: 0.3605 | Test  Acc: 0.8972
+============ Train epoch 72 ============
+============ Train epoch 73 ============
+============ Train epoch 74 ============
+ client 0| Train Loss: 0.2254 | Train Acc: 0.9452
+ client 1| Train Loss: 0.3364 | Train Acc: 0.9123
+ client 2| Train Loss: 0.3264 | Train Acc: 0.9045
+ client 3| Train Loss: 0.2076 | Train Acc: 0.9517
+ client 0| Test  Loss: 0.3584 | Test  Acc: 0.8975
+ client 1| Test  Loss: 0.3563 | Test  Acc: 0.8975
+ client 2| Test  Loss: 0.3643 | Test  Acc: 0.8948
+ client 3| Test  Loss: 0.3579 | Test  Acc: 0.8984
+ server | Test  Loss: 0.3579 | Test  Acc: 0.8984
+============ Train epoch 75 ============
+============ Train epoch 76 ============
+============ Train epoch 77 ============
+ client 0| Train Loss: 0.2164 | Train Acc: 0.9488
+ client 1| Train Loss: 0.3502 | Train Acc: 0.9123
+ client 2| Train Loss: 0.3271 | Train Acc: 0.9077
+ client 3| Train Loss: 0.2009 | Train Acc: 0.9529
+ client 0| Test  Loss: 0.3543 | Test  Acc: 0.8988
+ client 1| Test  Loss: 0.3557 | Test  Acc: 0.8976
+ client 2| Test  Loss: 0.3608 | Test  Acc: 0.8964
+ client 3| Test  Loss: 0.3562 | Test  Acc: 0.8982
+ server | Test  Loss: 0.3543 | Test  Acc: 0.8988
+============ Train epoch 78 ============
+============ Train epoch 79 ============
+============ Train epoch 80 ============
+ client 0| Train Loss: 0.2131 | Train Acc: 0.9481
+ client 1| Train Loss: 0.3338 | Train Acc: 0.9123
+ client 2| Train Loss: 0.3179 | Train Acc: 0.9062
+ client 3| Train Loss: 0.1889 | Train Acc: 0.9558
+ client 0| Test  Loss: 0.3502 | Test  Acc: 0.8992
+ client 1| Test  Loss: 0.3525 | Test  Acc: 0.8995
+ client 2| Test  Loss: 0.3537 | Test  Acc: 0.8982
+ client 3| Test  Loss: 0.3488 | Test  Acc: 0.8997
+ server | Test  Loss: 0.3488 | Test  Acc: 0.8997
+============ Train epoch 81 ============
+============ Train epoch 82 ============
+============ Train epoch 83 ============
+ client 0| Train Loss: 0.2066 | Train Acc: 0.9515
+ client 1| Train Loss: 0.3320 | Train Acc: 0.9240
+ client 2| Train Loss: 0.3266 | Train Acc: 0.9038
+ client 3| Train Loss: 0.1849 | Train Acc: 0.9570
+ client 0| Test  Loss: 0.3522 | Test  Acc: 0.8986
+ client 1| Test  Loss: 0.3512 | Test  Acc: 0.9004
+ client 2| Test  Loss: 0.3600 | Test  Acc: 0.8954
+ client 3| Test  Loss: 0.3469 | Test  Acc: 0.9005
+ server | Test  Loss: 0.3469 | Test  Acc: 0.9005
+============ Train epoch 84 ============
+============ Train epoch 85 ============
+============ Train epoch 86 ============
+ client 0| Train Loss: 0.1973 | Train Acc: 0.9546
+ client 1| Train Loss: 0.3077 | Train Acc: 0.9181
+ client 2| Train Loss: 0.3132 | Train Acc: 0.9062
+ client 3| Train Loss: 0.1762 | Train Acc: 0.9603
+ client 0| Test  Loss: 0.3441 | Test  Acc: 0.9013
+ client 1| Test  Loss: 0.3439 | Test  Acc: 0.9025
+ client 2| Test  Loss: 0.3481 | Test  Acc: 0.8998
+ client 3| Test  Loss: 0.3445 | Test  Acc: 0.9013
+ server | Test  Loss: 0.3439 | Test  Acc: 0.9025
+============ Train epoch 87 ============
+============ Train epoch 88 ============
+============ Train epoch 89 ============
+ client 0| Train Loss: 0.1927 | Train Acc: 0.9551
+ client 1| Train Loss: 0.3225 | Train Acc: 0.9181
+ client 2| Train Loss: 0.3167 | Train Acc: 0.9077
+ client 3| Train Loss: 0.1745 | Train Acc: 0.9604
+ client 0| Test  Loss: 0.3444 | Test  Acc: 0.9000
+ client 1| Test  Loss: 0.3447 | Test  Acc: 0.9019
+ client 2| Test  Loss: 0.3545 | Test  Acc: 0.8964
+ client 3| Test  Loss: 0.3424 | Test  Acc: 0.9012
+ server | Test  Loss: 0.3447 | Test  Acc: 0.9019
+============ Train epoch 90 ============
+============ Train epoch 91 ============
+============ Train epoch 92 ============
+ client 0| Train Loss: 0.1878 | Train Acc: 0.9578
+ client 1| Train Loss: 0.3465 | Train Acc: 0.9298
+ client 2| Train Loss: 0.3086 | Train Acc: 0.9119
+ client 3| Train Loss: 0.1675 | Train Acc: 0.9634
+ client 0| Test  Loss: 0.3417 | Test  Acc: 0.9028
+ client 1| Test  Loss: 0.3408 | Test  Acc: 0.9035
+ client 2| Test  Loss: 0.3470 | Test  Acc: 0.8998
+ client 3| Test  Loss: 0.3419 | Test  Acc: 0.9019
+ server | Test  Loss: 0.3408 | Test  Acc: 0.9035
+============ Train epoch 93 ============
+============ Train epoch 94 ============
+============ Train epoch 95 ============
+ client 0| Train Loss: 0.1865 | Train Acc: 0.9561
+ client 1| Train Loss: 0.3473 | Train Acc: 0.9240
+ client 2| Train Loss: 0.3015 | Train Acc: 0.9101
+ client 3| Train Loss: 0.1627 | Train Acc: 0.9640
+ client 0| Test  Loss: 0.3423 | Test  Acc: 0.9005
+ client 1| Test  Loss: 0.3395 | Test  Acc: 0.9036
+ client 2| Test  Loss: 0.3402 | Test  Acc: 0.9023
+ client 3| Test  Loss: 0.3369 | Test  Acc: 0.9027
+ server | Test  Loss: 0.3395 | Test  Acc: 0.9036
+============ Train epoch 96 ============
+============ Train epoch 97 ============
+============ Train epoch 98 ============
+ client 0| Train Loss: 0.1821 | Train Acc: 0.9586
+ client 1| Train Loss: 0.3290 | Train Acc: 0.9181
+ client 2| Train Loss: 0.3002 | Train Acc: 0.9098
+ client 3| Train Loss: 0.1552 | Train Acc: 0.9666
+ client 0| Test  Loss: 0.3421 | Test  Acc: 0.9013
+ client 1| Test  Loss: 0.3399 | Test  Acc: 0.9024
+ client 2| Test  Loss: 0.3402 | Test  Acc: 0.9019
+ client 3| Test  Loss: 0.3345 | Test  Acc: 0.9037
+ server | Test  Loss: 0.3345 | Test  Acc: 0.9037
+============ Train epoch 99 ============
+============ Train epoch 100 ============
+============ Train epoch 101 ============
+ client 0| Train Loss: 0.1688 | Train Acc: 0.9640
+ client 1| Train Loss: 0.3424 | Train Acc: 0.9181
+ client 2| Train Loss: 0.3017 | Train Acc: 0.9108
+ client 3| Train Loss: 0.1504 | Train Acc: 0.9686
+ client 0| Test  Loss: 0.3365 | Test  Acc: 0.9040
+ client 1| Test  Loss: 0.3357 | Test  Acc: 0.9039
+ client 2| Test  Loss: 0.3389 | Test  Acc: 0.9031
+ client 3| Test  Loss: 0.3347 | Test  Acc: 0.9038
+ server | Test  Loss: 0.3365 | Test  Acc: 0.9040
+============ Train epoch 102 ============
+============ Train epoch 103 ============
+============ Train epoch 104 ============
+ client 0| Train Loss: 0.1661 | Train Acc: 0.9626
+ client 1| Train Loss: 0.2878 | Train Acc: 0.9240
+ client 2| Train Loss: 0.2967 | Train Acc: 0.9136
+ client 3| Train Loss: 0.1494 | Train Acc: 0.9694
+ client 0| Test  Loss: 0.3340 | Test  Acc: 0.9042
+ client 1| Test  Loss: 0.3324 | Test  Acc: 0.9049
+ client 2| Test  Loss: 0.3366 | Test  Acc: 0.9029
+ client 3| Test  Loss: 0.3336 | Test  Acc: 0.9055
+ server | Test  Loss: 0.3336 | Test  Acc: 0.9055
+============ Train epoch 105 ============
+============ Train epoch 106 ============
+============ Train epoch 107 ============
+ client 0| Train Loss: 0.1583 | Train Acc: 0.9653
+ client 1| Train Loss: 0.3554 | Train Acc: 0.9298
+ client 2| Train Loss: 0.2972 | Train Acc: 0.9129
+ client 3| Train Loss: 0.1406 | Train Acc: 0.9725
+ client 0| Test  Loss: 0.3289 | Test  Acc: 0.9064
+ client 1| Test  Loss: 0.3332 | Test  Acc: 0.9044
+ client 2| Test  Loss: 0.3357 | Test  Acc: 0.9030
+ client 3| Test  Loss: 0.3299 | Test  Acc: 0.9070
+ server | Test  Loss: 0.3299 | Test  Acc: 0.9070
+============ Train epoch 108 ============
+============ Train epoch 109 ============
+============ Train epoch 110 ============
+ client 0| Train Loss: 0.1549 | Train Acc: 0.9672
+ client 1| Train Loss: 0.3036 | Train Acc: 0.9181
+ client 2| Train Loss: 0.2968 | Train Acc: 0.9136
+ client 3| Train Loss: 0.1356 | Train Acc: 0.9735
+ client 0| Test  Loss: 0.3322 | Test  Acc: 0.9050
+ client 1| Test  Loss: 0.3333 | Test  Acc: 0.9045
+ client 2| Test  Loss: 0.3363 | Test  Acc: 0.9030
+ client 3| Test  Loss: 0.3265 | Test  Acc: 0.9065
+ server | Test  Loss: 0.3265 | Test  Acc: 0.9065
+============ Train epoch 111 ============
+============ Train epoch 112 ============
+============ Train epoch 113 ============
+ client 0| Train Loss: 0.1499 | Train Acc: 0.9687
+ client 1| Train Loss: 0.3342 | Train Acc: 0.9123
+ client 2| Train Loss: 0.2954 | Train Acc: 0.9133
+ client 3| Train Loss: 0.1294 | Train Acc: 0.9751
+ client 0| Test  Loss: 0.3268 | Test  Acc: 0.9072
+ client 1| Test  Loss: 0.3310 | Test  Acc: 0.9055
+ client 2| Test  Loss: 0.3322 | Test  Acc: 0.9040
+ client 3| Test  Loss: 0.3270 | Test  Acc: 0.9076
+ server | Test  Loss: 0.3270 | Test  Acc: 0.9076
+============ Train epoch 114 ============
+============ Train epoch 115 ============
+============ Train epoch 116 ============
+ client 0| Train Loss: 0.1455 | Train Acc: 0.9693
+ client 1| Train Loss: 0.3086 | Train Acc: 0.9240
+ client 2| Train Loss: 0.2806 | Train Acc: 0.9175
+ client 3| Train Loss: 0.1259 | Train Acc: 0.9752
+ client 0| Test  Loss: 0.3265 | Test  Acc: 0.9067
+ client 1| Test  Loss: 0.3311 | Test  Acc: 0.9051
+ client 2| Test  Loss: 0.3274 | Test  Acc: 0.9055
+ client 3| Test  Loss: 0.3218 | Test  Acc: 0.9083
+ server | Test  Loss: 0.3218 | Test  Acc: 0.9083
+============ Train epoch 117 ============
+============ Train epoch 118 ============
+============ Train epoch 119 ============
+ client 0| Train Loss: 0.1438 | Train Acc: 0.9686
+ client 1| Train Loss: 0.3106 | Train Acc: 0.9298
+ client 2| Train Loss: 0.2930 | Train Acc: 0.9147
+ client 3| Train Loss: 0.1206 | Train Acc: 0.9779
+ client 0| Test  Loss: 0.3302 | Test  Acc: 0.9045
+ client 1| Test  Loss: 0.3254 | Test  Acc: 0.9077
+ client 2| Test  Loss: 0.3349 | Test  Acc: 0.9027
+ client 3| Test  Loss: 0.3231 | Test  Acc: 0.9075
+ server | Test  Loss: 0.3254 | Test  Acc: 0.9077
+============ Train epoch 120 ============
+============ Train epoch 121 ============
+============ Train epoch 122 ============
+ client 0| Train Loss: 0.1328 | Train Acc: 0.9735
+ client 1| Train Loss: 0.3146 | Train Acc: 0.9357
+ client 2| Train Loss: 0.2892 | Train Acc: 0.9136
+ client 3| Train Loss: 0.1177 | Train Acc: 0.9783
+ client 0| Test  Loss: 0.3233 | Test  Acc: 0.9072
+ client 1| Test  Loss: 0.3256 | Test  Acc: 0.9065
+ client 2| Test  Loss: 0.3299 | Test  Acc: 0.9041
+ client 3| Test  Loss: 0.3230 | Test  Acc: 0.9073
+ server | Test  Loss: 0.3230 | Test  Acc: 0.9073
+============ Train epoch 123 ============
+============ Train epoch 124 ============
+============ Train epoch 125 ============
+ client 0| Train Loss: 0.1325 | Train Acc: 0.9735
+ client 1| Train Loss: 0.2856 | Train Acc: 0.9240
+ client 2| Train Loss: 0.2897 | Train Acc: 0.9129
+ client 3| Train Loss: 0.1149 | Train Acc: 0.9787
+ client 0| Test  Loss: 0.3222 | Test  Acc: 0.9088
+ client 1| Test  Loss: 0.3226 | Test  Acc: 0.9078
+ client 2| Test  Loss: 0.3293 | Test  Acc: 0.9046
+ client 3| Test  Loss: 0.3234 | Test  Acc: 0.9072
+ server | Test  Loss: 0.3222 | Test  Acc: 0.9088
+============ Train epoch 126 ============
+============ Train epoch 127 ============
+============ Train epoch 128 ============
+ client 0| Train Loss: 0.1282 | Train Acc: 0.9736
+ client 1| Train Loss: 0.3071 | Train Acc: 0.9240
+ client 2| Train Loss: 0.2888 | Train Acc: 0.9140
+ client 3| Train Loss: 0.1101 | Train Acc: 0.9807
+ client 0| Test  Loss: 0.3283 | Test  Acc: 0.9056
+ client 1| Test  Loss: 0.3219 | Test  Acc: 0.9082
+ client 2| Test  Loss: 0.3338 | Test  Acc: 0.9036
+ client 3| Test  Loss: 0.3203 | Test  Acc: 0.9075
+ server | Test  Loss: 0.3219 | Test  Acc: 0.9082
+============ Train epoch 129 ============
+============ Train epoch 130 ============
+============ Train epoch 131 ============
+ client 0| Train Loss: 0.1254 | Train Acc: 0.9764
+ client 1| Train Loss: 0.3702 | Train Acc: 0.9298
+ client 2| Train Loss: 0.2755 | Train Acc: 0.9161
+ client 3| Train Loss: 0.1033 | Train Acc: 0.9829
+ client 0| Test  Loss: 0.3258 | Test  Acc: 0.9062
+ client 1| Test  Loss: 0.3263 | Test  Acc: 0.9064
+ client 2| Test  Loss: 0.3239 | Test  Acc: 0.9078
+ client 3| Test  Loss: 0.3185 | Test  Acc: 0.9091
+ server | Test  Loss: 0.3185 | Test  Acc: 0.9091
+============ Train epoch 132 ============
+============ Train epoch 133 ============
+============ Train epoch 134 ============
+ client 0| Train Loss: 0.1221 | Train Acc: 0.9764
+ client 1| Train Loss: 0.4065 | Train Acc: 0.9240
+ client 2| Train Loss: 0.2792 | Train Acc: 0.9168
+ client 3| Train Loss: 0.1063 | Train Acc: 0.9810
+ client 0| Test  Loss: 0.3230 | Test  Acc: 0.9072
+ client 1| Test  Loss: 0.3223 | Test  Acc: 0.9077
+ client 2| Test  Loss: 0.3264 | Test  Acc: 0.9049
+ client 3| Test  Loss: 0.3256 | Test  Acc: 0.9058
+ server | Test  Loss: 0.3223 | Test  Acc: 0.9077
+============ Train epoch 135 ============
+============ Train epoch 136 ============
+============ Train epoch 137 ============
+ client 0| Train Loss: 0.1149 | Train Acc: 0.9790
+ client 1| Train Loss: 0.2857 | Train Acc: 0.9357
+ client 2| Train Loss: 0.2764 | Train Acc: 0.9164
+ client 3| Train Loss: 0.0970 | Train Acc: 0.9839
+ client 0| Test  Loss: 0.3189 | Test  Acc: 0.9079
+ client 1| Test  Loss: 0.3209 | Test  Acc: 0.9074
+ client 2| Test  Loss: 0.3228 | Test  Acc: 0.9072
+ client 3| Test  Loss: 0.3166 | Test  Acc: 0.9085
+ server | Test  Loss: 0.3166 | Test  Acc: 0.9085
+============ Train epoch 138 ============
+============ Train epoch 139 ============
+============ Train epoch 140 ============
+ client 0| Train Loss: 0.1121 | Train Acc: 0.9793
+ client 1| Train Loss: 0.2947 | Train Acc: 0.9181
+ client 2| Train Loss: 0.2769 | Train Acc: 0.9161
+ client 3| Train Loss: 0.0960 | Train Acc: 0.9838
+ client 0| Test  Loss: 0.3194 | Test  Acc: 0.9091
+ client 1| Test  Loss: 0.3226 | Test  Acc: 0.9073
+ client 2| Test  Loss: 0.3225 | Test  Acc: 0.9063
+ client 3| Test  Loss: 0.3213 | Test  Acc: 0.9068
+ server | Test  Loss: 0.3194 | Test  Acc: 0.9091
+============ Train epoch 141 ============
+============ Train epoch 142 ============
+============ Train epoch 143 ============
+ client 0| Train Loss: 0.1121 | Train Acc: 0.9804
+ client 1| Train Loss: 0.2855 | Train Acc: 0.9298
+ client 2| Train Loss: 0.2689 | Train Acc: 0.9203
+ client 3| Train Loss: 0.0916 | Train Acc: 0.9849
+ client 0| Test  Loss: 0.3244 | Test  Acc: 0.9075
+ client 1| Test  Loss: 0.3212 | Test  Acc: 0.9081
+ client 2| Test  Loss: 0.3182 | Test  Acc: 0.9085
+ client 3| Test  Loss: 0.3139 | Test  Acc: 0.9100
+ server | Test  Loss: 0.3139 | Test  Acc: 0.9100
+============ Train epoch 144 ============
+============ Train epoch 145 ============
+============ Train epoch 146 ============
+ client 0| Train Loss: 0.1043 | Train Acc: 0.9816
+ client 1| Train Loss: 0.2735 | Train Acc: 0.9357
+ client 2| Train Loss: 0.2788 | Train Acc: 0.9157
+ client 3| Train Loss: 0.0905 | Train Acc: 0.9855
+ client 0| Test  Loss: 0.3161 | Test  Acc: 0.9090
+ client 1| Test  Loss: 0.3177 | Test  Acc: 0.9085
+ client 2| Test  Loss: 0.3266 | Test  Acc: 0.9060
+ client 3| Test  Loss: 0.3173 | Test  Acc: 0.9090
+ server | Test  Loss: 0.3161 | Test  Acc: 0.9090
+============ Train epoch 147 ============
+============ Train epoch 148 ============
+============ Train epoch 149 ============
+ client 0| Train Loss: 0.1012 | Train Acc: 0.9829
+ client 1| Train Loss: 0.3335 | Train Acc: 0.9181
+ client 2| Train Loss: 0.2784 | Train Acc: 0.9161
+ client 3| Train Loss: 0.0846 | Train Acc: 0.9863
+ client 0| Test  Loss: 0.3160 | Test  Acc: 0.9093
+ client 1| Test  Loss: 0.3173 | Test  Acc: 0.9088
+ client 2| Test  Loss: 0.3260 | Test  Acc: 0.9055
+ client 3| Test  Loss: 0.3176 | Test  Acc: 0.9084
+ server | Test  Loss: 0.3160 | Test  Acc: 0.9093
