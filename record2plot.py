@@ -96,7 +96,7 @@ def draw_per_dataset_per_skew():
 
             # loss_history_moon = parse_dict(logfile_moon, "Train Loss: ")
             # loss_history_moon = average_loss_history(loss_history_moon)
-            acc_history_moon = parse_dict(logfile_moon, "Test  Acc: ")['server']
+            # acc_history_moon = parse_dict(logfile_moon, "Test  Acc: ")['server']
 
             nepochs = range(1, len(loss_history_fedavg) + 1)
 
@@ -114,7 +114,7 @@ def draw_per_dataset_per_skew():
                     y_hists=[acc_history_fedavg,
                             acc_history_fedprox,
                             acc_history_fedbn,
-                            acc_history_moon,
+                            # acc_history_moon,
                             ],
                     labels=["FedAvg", "FedProx", "FedBN", "MOON"],
                     title=f"Test Accuracy History on {dataset}_{skew} {nclient} clients",

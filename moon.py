@@ -19,7 +19,10 @@ from FedBN import prepare_data
 
 os.environ['CUDA_VISIBLE_DEVICES']='2'
 
+#
+# COURTESY:
 # https://github.com/QinbinLi/MOON
+#
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--test', action='store_true', help='test the pretrained model')

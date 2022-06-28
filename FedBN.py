@@ -5,7 +5,7 @@
 Federated learning with different aggregation strategy on benchmark exp.
 
 example test command:
-    python FL_tr.py --mode fedbn \
+    python FedBN.py --mode fedbn \
                     --model DigitModel \
                     --dataset mnist \
                     --skew feat_noise \

@@ -17,7 +17,10 @@ from datafiles.preprocess import preprocess
 from tr_utils import train, train_fedprox
 from FedBN import prepare_data
 
+#
+# COURTESY:
 # https://github.com/ramshi236/Accelerated-Federated-Learning-Over-MAC-in-Heterogeneous-Networks
+#
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--test', action='store_true', help='test the pretrained model')
