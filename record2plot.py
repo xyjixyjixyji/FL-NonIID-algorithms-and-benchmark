@@ -62,9 +62,10 @@ def draw_plot(x_hist,
     plt.legend()
     plt.savefig(os.path.join('./figures', name))
 
-folder = 'logs_fedbn_fedprox_fedavg/DigitModel'
+folder = 'logs/DigitModel'
 datasets = ['mnist', 'kmnist', 'svhn', 'cifar10']
 skews = ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within']
+# skews = ['quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within']
 nclient = '4'
 
 def draw_per_dataset_per_skew():
@@ -74,11 +75,15 @@ def draw_per_dataset_per_skew():
             logname_fedprox = f'fedprox_{dataset}_{skew}_{nclient}_test.log'
             logname_fedavg = f'fedavg_{dataset}_{skew}_{nclient}_test.log'
             logname_moon = f'moon_{dataset}_{skew}_{nclient}_test.log'
+            logname_pfedme = f'pfedme_{dataset}_{skew}_{nclient}_test.log'
+            logname_perfedavg = f'perfedavg_{dataset}_{skew}_{nclient}_test.log'
 
             logfile_fedbn = os.path.join(folder, logname_fedbn)
             logfile_fedprox = os.path.join(folder, logname_fedprox)
             logfile_fedavg = os.path.join(folder, logname_fedavg)
             logfile_moon = os.path.join(folder, logname_moon)
+            logfile_pfedme = os.path.join(folder, logname_pfedme)
+            logfile_perfedavg = os.path.join(folder, logname_perfedavg)
 
             # loss_history_{algorithm}: has key(client 0, client1, client2 and client 3)
             # we average the loss history of nclient to be our final loss history
@@ -96,9 +101,24 @@ def draw_per_dataset_per_skew():
 
             # loss_history_moon = parse_dict(logfile_moon, "Train Loss: ")
             # loss_history_moon = average_loss_history(loss_history_moon)
-            # acc_history_moon = parse_dict(logfile_moon, "Test  Acc: ")['server']
+            acc_history_moon = parse_dict(logfile_moon, "Test  Acc: ")['server']
 
-            nepochs = range(1, len(loss_history_fedavg) + 1)
+            acc_history_pfedme = parse_dict(logfile_pfedme, "Test  Acc: ")['server']
+
+            acc_history_perfedavg = parse_dict(logfile_perfedavg, "Test  Acc: ")['server']
+
+            print(dataset, skew)
+            print(len(acc_history_fedavg), len(acc_history_fedprox), len(acc_history_fedbn), len(acc_history_moon), len(acc_history_perfedavg), len(acc_history_pfedme))
+            minlen = min(len(acc_history_fedavg), len(acc_history_fedprox), len(acc_history_fedbn), len(acc_history_moon), len(acc_history_perfedavg), len(acc_history_pfedme))
+            nepochs = range(1, minlen + 1)
+            acc_history_fedavg = acc_history_fedavg[:minlen]
+            acc_history_fedprox = acc_history_fedprox[:minlen]
+            acc_history_fedbn = acc_history_fedbn[:minlen]
+            acc_history_moon = acc_history_moon[:minlen]
+            acc_history_perfedavg = acc_history_perfedavg[:minlen]
+            acc_history_pfedme = acc_history_pfedme[:minlen]
+            print(len(acc_history_fedavg), len(acc_history_fedprox), len(acc_history_fedbn), len(acc_history_moon), len(acc_history_perfedavg), len(acc_history_pfedme))
+            print("")
 
             # draw_plot(x_hist=nepochs,
             #         y_hists=[loss_history_fedavg,
@@ -111,12 +131,15 @@ def draw_per_dataset_per_skew():
             #         name=f'Loss_{dataset}_{skew}.png')
 
             draw_plot(x_hist=nepochs,
-                    y_hists=[acc_history_fedavg,
+                      y_hists=[acc_history_fedavg,
                             acc_history_fedprox,
                             acc_history_fedbn,
-                            # acc_history_moon,
+                            acc_history_moon,
+                            acc_history_pfedme,
+                            acc_history_perfedavg,
                             ],
-                    labels=["FedAvg", "FedProx", "FedBN", "MOON"],
+                    labels=["FedAvg", "FedProx", "FedBN", "MOON", "pFedMe", "perFedAvg"],
+                    # labels=["FedAvg", "FedProx", "FedBN"],
                     title=f"Test Accuracy History on {dataset}_{skew} {nclient} clients",
                     x_label="Global Epochs",
                     y_label="Accuracy (%)",
