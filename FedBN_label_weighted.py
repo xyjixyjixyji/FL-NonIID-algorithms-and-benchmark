@@ -36,7 +36,7 @@ details in args
 """
 
 #
-# COURTESY: PART OF THE CODE ARE REFERENCED FROM THE FOLLOWING LINK
+# COURTESY: part of the code is referenced from the FedBN official code
 # https://github.com/med-air/FedBN/blob/master/federated/fed_digits.py
 #
 

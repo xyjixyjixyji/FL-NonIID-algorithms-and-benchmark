@@ -20,7 +20,7 @@ from tr_utils import train, train_fedprox
 os.environ['CUDA_VISIBLE_DEVICES']='1'
 
 #
-# COURTESY:
+# COURTESY: we referenced code from following link for experiment
 # https://github.com/ramshi236/Accelerated-Federated-Learning-Over-MAC-in-Heterogeneous-Networks
 #
 

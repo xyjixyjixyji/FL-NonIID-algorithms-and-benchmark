@@ -16,12 +16,11 @@ from datafiles.utils import setseed
 from datafiles.preprocess import preprocess
 from tr_utils import train, train_fedprox
 
-
 # for GPU server selection
 os.environ['CUDA_VISIBLE_DEVICES']='1'
 
 #
-# COURTESY:
+# COURTESY: we reference from following link for experiment
 # https://github.com/QinbinLi/MOON
 #
 
