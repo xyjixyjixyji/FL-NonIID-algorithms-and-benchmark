@@ -5,7 +5,7 @@
 Federated learning with different aggregation strategy on benchmark exp.
 
 example test command:
-    python FedBN.py --mode fedbn \
+    python FL_tr.py --mode fedbn \
                     --model DigitModel \
                     --dataset mnist \
                     --skew feat_noise \
@@ -52,16 +52,19 @@ import torchvision
 import torchvision.transforms as transforms
 from models.digit import DigitModel
 from models.resnet import *
-from skew import label_skew_across_labels, label_skew_by_within_labels, quantity_skew, feature_skew_noise, feature_skew_filter
+from skew import label_skew_across_labels, label_skew_by_within_labels, quantity_skew, feature_skew_noise, feature_skew_filter, prepare_data
 from datafiles.loaders import dset2loader
 from datafiles.utils import setseed
 from datafiles.preprocess import preprocess
-from tr_utils import train, train_fedprox
+from tr_utils import train, train_fedprox,train_LW
+
+# for GPU server selection
+os.environ['CUDA_VISIBLE_DEVICES']='1'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--test', action='store_true', help='test the pretrained model')
 parser.add_argument('--percent', type=float, default=0.1, help ='percentage of dataset to train')
-parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
+parser.add_argument('--lr', type=float, default=1e-1, help='learning rate')
 parser.add_argument('--batch_size', type=int, default=32, help ='batch size')
 parser.add_argument('--iters', type=int, default=50, help='iterations for communication')
 parser.add_argument('--wk_iters', type=int, default=3, help='optimization iters in local worker between communication')
@@ -69,7 +72,7 @@ parser.add_argument('--mode', type=str, default='fedbn', help='fedavg | fedprox 
 parser.add_argument('--mu', type=float, default=1e-2, help='The hyper parameter for fedprox')
 parser.add_argument('--save_path', type=str, default='./checkpoint', help='path to save the checkpoint')
 parser.add_argument('--load_path', type=str, default='./checkpoint', help='path to save the checkpoint')
-parser.add_argument('--log_path', type=str, default='./logs/', help='path to save the checkpoint')
+parser.add_argument('--log_path', type=str, default='./logs_label_weighted/', help='path to save the checkpoint')
 parser.add_argument('--resume', action='store_true', help='resume training from the save path checkpoint')
 parser.add_argument('--choke', action = 'store_true', help='choke those bad clients when communicating')
 parser.add_argument('--label', action='store_true', help = 'reweight according to label number in FedBN')
@@ -81,7 +84,7 @@ parser.add_argument('--filter_sz', type=int, default=3, help='filter size for fi
 parser.add_argument('--Di_alpha', type=float, default=0.5, help='alpha level for dirichlet distribution')
 parser.add_argument('--overlap', type=bool, default=True, help='If lskew_across allows label distribution to overlap')
 parser.add_argument('--nlabel', type=int, default=10, help='number of label for dirichlet label skew')
-parser.add_argument('--nclient', type=int, default=5, help='client number')
+parser.add_argument('--nclient', type=int, default=4, help='client number')
 parser.add_argument('--seed', type=int, default=400, help='random seed')
 args = parser.parse_args()
 
@@ -89,40 +92,12 @@ print(f"args: {args}")
 
 assert(args.dataset in ['svhn', 'cifar10', 'mnist', 'kmnist'])
 assert(args.skew in ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within'])
-# assert(args.Fl_size % 2 == 1)
 assert(args.mode in ['fedavg', 'fedprox', 'fedbn'])
 
 setseed(args.seed)
 
 
-def prepare_data(args):
-    train_loaders = []
-    test_loaders  = []
-    tr_sets, te_set = [],[]
-        
-    if args.skew == 'none':
-        tr_sets, te_set = feature_skew_noise(args.dataset, args.nclient, 0)
-    elif args.skew == 'quantity':
-        tr_sets, te_set = quantity_skew(args.dataset, args.nclient, args.Di_alpha)
-    elif args.skew == 'feat_noise':
-        tr_sets, te_set = feature_skew_noise(args.dataset, args.nclient, args.noise_std)
-    elif args.skew == 'feat_filter':
-        tr_sets, te_set = feature_skew_filter(args.dataset, args.nclient, args.filter_sz)
-    elif args.skew == 'label_across':
-        tr_sets, te_set = label_skew_across_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha, args.overlap)
-    elif args.skew == 'label_within':
-        tr_sets, te_set = label_skew_by_within_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha)
-    else:
-        raise ValueError("UNDEFINED SKEW")
 
-    for tr_s in tr_sets:
-        tr_l = dset2loader(tr_s,args.batch_size)
-        te_l = dset2loader(te_set,args.batch_size)
-        train_loaders.append(tr_l)
-        test_loaders.append(te_l)
-    # test_loader = dset2loader(te_set,args.batch_size)
-
-    return train_loaders, test_loaders
 
 def test(model, test_loader, loss_fun, device):
     model.eval()
@@ -198,9 +173,13 @@ if __name__ == '__main__':
     log_path = os.path.join(args.log_path, args.model)
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-    logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Choking" if args.choke else "" ,args.dataset,args.skew,args.nclient)), 'a')
-    if args.label:
-        logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Labeling",args.dataset,args.skew,args.nclient)), 'a')
+    if args.choke:
+        logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Choking",args.dataset,args.skew,args.nclient)), 'w')
+    elif args.label:
+        logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Labeling",args.dataset,args.skew,args.nclient)), 'w')
+    else:
+        logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode ,args.dataset,args.skew,args.nclient)), 'w')
+    
     logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
     logfile.write('===Setting===\n')
     logfile.write('    lr: {}\n'.format(args.lr))
@@ -223,22 +202,6 @@ if __name__ == '__main__':
     client_weights = [1/client_num for i in range(client_num)]
     models = [copy.deepcopy(server_model).to(device) for idx in range(client_num)]
 
-    # if args.test:
-    #     print('Loading snapshots...')
-    #     checkpoint = torch.load(os.path.join(args.load_path, '{}'.format(args.mode)))
-    #     server_model.load_state_dict(checkpoint['server_model'])
-    #     if args.mode.lower()=='fedbn':
-    #         for client_idx in range(client_num):
-    #             models[client_idx].load_state_dict(checkpoint['model_{}'.format(client_idx)])
-    #         for test_idx, test_loader in enumerate(test_loaders):
-    #             _, test_acc = test(models[test_idx], test_loader, loss_fun, device)
-    #             print(' client {}| Test  Acc: {:.4f}'.format(test_idx, test_acc))
-    #     else:
-    #         for test_idx, test_loader in enumerate(test_loaders):
-    #             _, test_acc = test(server_model, test_loader, loss_fun, device)
-    #             print(' client {}| Test  Acc: {:.4f}'.format(test_idx, test_acc))
-    #     exit(0)
-
     if args.resume:
         checkpoint = torch.load(SAVE_PATH)
         server_model.load_state_dict(checkpoint['server_model'])
@@ -258,7 +221,7 @@ if __name__ == '__main__':
         optimizers = [optim.SGD(params=models[idx].parameters(), lr=args.lr) for idx in range(client_num)]
         samples = [0 for i in range(client_num)]
         total = 0
-        labels = [0 for i in range(client_num)]
+        labels = torch.tensor([])
         for wi in range(args.wk_iters):
             print("============ Train epoch {} ============".format(wi + a_iter * args.wk_iters))
             logfile.write("============ Train epoch {} ============\n".format(wi + a_iter * args.wk_iters)) 
@@ -274,19 +237,24 @@ if __name__ == '__main__':
                     if args.mode.lower() == 'fedavg':
                         samples[client_idx] += len(train_loader)
                         total += len(train_loader)
-                    _, _, labels_num = train(model, train_loader, optimizer, loss_fun, client_num, device)
-                    labels[client_idx] = labels_num
+                    _, _, labels_num = train_LW(model, train_loader, optimizer, loss_fun, client_num, device,args)
+                    if wi == 0 :
+                        labels = torch.cat((labels,labels_num.unsqueeze(0)),0)
 
          
         # aggregation
         client_weights = [1/client_num for i in range(client_num)]
         if args.mode.lower() == 'fedavg':
             client_weights = [samples[i]/total for i in range(client_num)]
-        if args.label:
+        if args.mode.lower() == 'fedbn' and args.label:
             total = 0
-            for i in range(len(labels)):
-                total += labels[i]
-            client_weights = [labels[i]/total for i in range(client_num)]
+            total_label = torch.sum(labels,dim=0)
+            client_w = [0 for i in range(client_num)]
+            for i in range(args.nlabel):
+                for j in range(client_num):
+                    client_w[j] += labels[j][i]/total_label[i]
+            client_weights = [client_w[i]/args.nlabel for i in range(client_num)]
+            # print(client_weights)
         server_model, models = communication(args, server_model, models, client_weights, train_losses)
         min_test_loss = 1000
         max_test_acc = 0

@@ -202,3 +202,31 @@ def label_skew_by_within_labels(dataset_name, nclient, nlabel=10, alpha=.5):
     
     return client2dataset, te_set
  
+def prepare_data(args):
+    train_loaders = []
+    test_loaders  = []
+    tr_sets, te_set = [],[]
+        
+    if args.skew == 'none':
+        tr_sets, te_set = feature_skew_noise(args.dataset, args.nclient, 0)
+    elif args.skew == 'quantity':
+        tr_sets, te_set = quantity_skew(args.dataset, args.nclient, args.Di_alpha)
+    elif args.skew == 'feat_noise':
+        tr_sets, te_set = feature_skew_noise(args.dataset, args.nclient, args.noise_std)
+    elif args.skew == 'feat_filter':
+        tr_sets, te_set = feature_skew_filter(args.dataset, args.nclient, args.filter_sz)
+    elif args.skew == 'label_across':
+        tr_sets, te_set = label_skew_across_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha, args.overlap)
+    elif args.skew == 'label_within':
+        tr_sets, te_set = label_skew_by_within_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha)
+    else:
+        raise ValueError("UNDEFINED SKEW")
+
+    for tr_s in tr_sets:
+        tr_l = dset2loader(tr_s,args.batch_size)
+        te_l = dset2loader(te_set,args.batch_size)
+        train_loaders.append(tr_l)
+        test_loaders.append(te_l)
+    
+
+    return train_loaders, test_loaders

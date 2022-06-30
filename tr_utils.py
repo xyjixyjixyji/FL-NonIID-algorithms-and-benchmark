@@ -47,8 +47,7 @@ def train_LW(model, train_loader, optimizer, loss_fun, client_num, device,args):
 
         pred = output.data.max(1)[1]
         correct += pred.eq(y.view(-1)).sum().item()
-    # labels = set(labels)
-    # labels_num = len(labels)
+    
     return loss_all/len(train_iter), correct/num_data, labels
 
 def train_fedprox(args, model, server_model, train_loader, optimizer, loss_fun, client_num, device):

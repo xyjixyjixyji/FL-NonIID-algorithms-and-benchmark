@@ -1,6 +1,3 @@
-
-
-
 """
 Federated learning with different aggregation strategy on benchmark exp.
 
@@ -52,79 +49,56 @@ import torchvision
 import torchvision.transforms as transforms
 from models.digit import DigitModel
 from models.resnet import *
-from skew import label_skew_across_labels, label_skew_by_within_labels, quantity_skew, feature_skew_noise, feature_skew_filter
+from skew import label_skew_across_labels, label_skew_by_within_labels, quantity_skew, feature_skew_noise, feature_skew_filter, prepare_data
 from datafiles.loaders import dset2loader
 from datafiles.utils import setseed
 from datafiles.preprocess import preprocess
-from tr_utils import train, train_fedprox,train_LW
+from tr_utils import train, train_fedprox
 
+
+# for GPU server selection
 os.environ['CUDA_VISIBLE_DEVICES']='1'
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--test', action='store_true', help='test the pretrained model')
 parser.add_argument('--percent', type=float, default=0.1, help ='percentage of dataset to train')
-parser.add_argument('--lr', type=float, default=1e-1, help='learning rate')
+parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
 parser.add_argument('--batch_size', type=int, default=32, help ='batch size')
 parser.add_argument('--iters', type=int, default=50, help='iterations for communication')
 parser.add_argument('--wk_iters', type=int, default=3, help='optimization iters in local worker between communication')
-parser.add_argument('--mode', type=str, default='fedbn', help='fedavg | fedprox | fedbn')
+parser.add_argument('--mode', type=str, default='fedbn', help='fedavg | fedprox | fedbn | perfedavg | pfedme')
 parser.add_argument('--mu', type=float, default=1e-2, help='The hyper parameter for fedprox')
 parser.add_argument('--save_path', type=str, default='./checkpoint', help='path to save the checkpoint')
 parser.add_argument('--load_path', type=str, default='./checkpoint', help='path to save the checkpoint')
-parser.add_argument('--log_path', type=str, default='./logs_label_weighted/', help='path to save the checkpoint')
+parser.add_argument('--log_path', type=str, default='./logs/', help='path to save the checkpoint')
 parser.add_argument('--resume', action='store_true', help='resume training from the save path checkpoint')
-parser.add_argument('--choke', action = 'store_true', help='choke those bad clients when communicating')
-parser.add_argument('--label', action='store_true', help = 'reweight according to label number in FedBN')
 parser.add_argument('--model', type=str, default="DigitModel", help = 'model used:| DigitModel | resnet20 | resnet32 | resnet44 | resnet56 | resnet110 | resnet1202 |')
 parser.add_argument('--dataset', type=str, default="mnist", help = '| mnist | kmnist | svhn | cifar10 |')
 parser.add_argument('--skew', type=str, default='none', help='| none | quantity | feat_filter | feat_noise | label_across | label_within |')
 parser.add_argument('--noise_std', type=float, default=0.5, help='noise level for gaussion noise')
 parser.add_argument('--filter_sz', type=int, default=3, help='filter size for filter')
 parser.add_argument('--Di_alpha', type=float, default=0.5, help='alpha level for dirichlet distribution')
+parser.add_argument('--PerFedAvg_alpha', type=float, default=1e-2, help='alpha for PerFedAvg')
+parser.add_argument('--PerFedAvg_beta', type=float, default=1e-3, help='beta for PerFedAvg')
+parser.add_argument('--pFedMe_alpha', type=float, default=0.005, help='alpha for pFedMe')
+parser.add_argument('--pFedMe_lamda', type=float, default=15, help='lamda for pFedMe')
 parser.add_argument('--overlap', type=bool, default=True, help='If lskew_across allows label distribution to overlap')
 parser.add_argument('--nlabel', type=int, default=10, help='number of label for dirichlet label skew')
-parser.add_argument('--nclient', type=int, default=4, help='client number')
+parser.add_argument('--nclient', type=int, default=5, help='client number')
 parser.add_argument('--seed', type=int, default=400, help='random seed')
+
 args = parser.parse_args()
 
 print(f"args: {args}")
 
 assert(args.dataset in ['svhn', 'cifar10', 'mnist', 'kmnist'])
 assert(args.skew in ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within'])
-# assert(args.Fl_size % 2 == 1)
-assert(args.mode in ['fedavg', 'fedprox', 'fedbn'])
+assert(args.mode in ['fedavg', 'fedprox', 'fedbn', 'perfedavg', 'pfedme'])
 
 setseed(args.seed)
 
 
-def prepare_data(args):
-    train_loaders = []
-    test_loaders  = []
-    tr_sets, te_set = [],[]
-        
-    if args.skew == 'none':
-        tr_sets, te_set = feature_skew_noise(args.dataset, args.nclient, 0)
-    elif args.skew == 'quantity':
-        tr_sets, te_set = quantity_skew(args.dataset, args.nclient, args.Di_alpha)
-    elif args.skew == 'feat_noise':
-        tr_sets, te_set = feature_skew_noise(args.dataset, args.nclient, args.noise_std)
-    elif args.skew == 'feat_filter':
-        tr_sets, te_set = feature_skew_filter(args.dataset, args.nclient, args.filter_sz)
-    elif args.skew == 'label_across':
-        tr_sets, te_set = label_skew_across_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha, args.overlap)
-    elif args.skew == 'label_within':
-        tr_sets, te_set = label_skew_by_within_labels(args.dataset, args.nclient, args.nlabel, args.Di_alpha)
-    else:
-        raise ValueError("UNDEFINED SKEW")
-
-    for tr_s in tr_sets:
-        tr_l = dset2loader(tr_s,args.batch_size)
-        te_l = dset2loader(te_set,args.batch_size)
-        train_loaders.append(tr_l)
-        test_loaders.append(te_l)
-    # test_loader = dset2loader(te_set,args.batch_size)
-
-    return train_loaders, test_loaders
 
 def test(model, test_loader, loss_fun, device):
     model.eval()
@@ -147,7 +121,7 @@ def test(model, test_loader, loss_fun, device):
     return test_loss/len(test_loader), correct /len(test_loader.dataset)
 
 ################# Key Function ########################
-def communication(args, server_model, models, client_weights, train_losses):
+def communication(args, server_model, models, client_weights):
     with torch.no_grad():
         # aggregate params
         if args.mode.lower() == 'fedbn':
@@ -160,17 +134,6 @@ def communication(args, server_model, models, client_weights, train_losses):
                     for client_idx in range(client_num):
                         models[client_idx].state_dict()[key].data.copy_(server_model.state_dict()[key])
         else:
-            if args.choke and len(train_losses)!=0:
-                loss_mean = np.mean(train_losses)
-                loss_std = np.std(train_losses, ddof=1)
-                if loss_std > 0.2:
-                    tmp_total = 0
-                    for client_idx in range(len(client_weights)):
-                        if(train_losses[client_idx]>(loss_mean+loss_std)):
-                            client_weights[client_idx] = 0
-                        else:
-                            tmp_total += client_weights[client_idx]
-                    client_weights = [client_weights[client_idx]/tmp_total for client_idx in range(len(client_weights))]
             for key in server_model.state_dict().keys():
                 # num_batches_tracked is a non trainable LongTensor and
                 # num_batches_tracked are the same for all clients for the given datasets
@@ -187,8 +150,101 @@ def communication(args, server_model, models, client_weights, train_losses):
     return server_model, models
 
 
+def train_perfedavg(model, train_loader, optimizer, loss_fun, device):
+
+    model.train()
+    train_iter = iter(train_loader)
+
+    for step in range(len(train_iter)):
+        X, y = next(train_iter)
+
+        final_model = copy.deepcopy(model)
+
+        X = X.to(device).float()
+        y = y.to(device).long()
+
+        y_pred = model(X)
+        loss_function = loss_fun
+        loss = loss_function(y_pred, y)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+
+        # get grad of loss
+        y_pred = model(X)
+        loss_function = loss_fun
+        loss = loss_function(y_pred, y)
+        loss.backward()
+
+        y_pred = model(X)
+        loss_function = loss_fun
+        loss = loss_function(y_pred, y)
+        grads = torch.autograd.grad(loss, model.parameters(),allow_unused=True)
+        for param, grad in zip(final_model.parameters(), grads):
+            param.data.sub_(args.PerFedAvg_alpha * grad)
+
+        y_pred = model(X)
+        loss_function = loss_fun
+        loss = loss_function(y_pred, y)
+        grads = torch.autograd.grad(loss, model.parameters(),allow_unused=True)
+        for param, grad in zip(final_model.parameters(), grads):
+            param.data.sub_(args.PerFedAvg_beta * grad)
+
+
+        model = copy.deepcopy(final_model)
+        return model
+
+
+
+
+def train_pFedMe(model, train_loader, optimizer, loss_fun, device):
+    # reference:https://github.com/CharlieDinh/pFedMe/blob/master
+    model.train()
+    train_iter = iter(train_loader)
+
+    for step in range(len(train_iter)):
+        X, y = next(train_iter)
+        local_model = copy.deepcopy(model)
+        final_model = copy.deepcopy(model)
+        X = X.to(device).float()
+        y = y.to(device).long()
+        
+        optimizer.zero_grad()
+        y_pred = model(X)
+        loss_function = loss_fun
+        loss = loss_function(y_pred, y)
+        loss.backward()
+        optimizer.step()
+
+
+        y_pred = model(X)
+        loss_function = loss_fun
+        loss = loss_function(y_pred, y)
+        grads = torch.autograd.grad(loss, model.parameters(),allow_unused=True)
+        for param, grad in zip(final_model.parameters(), grads):
+            param.data.sub_(args.PerFedAvg_alpha * grad)
+
+        y_pred = model(X)
+        loss_function = loss_fun
+        loss = loss_function(y_pred, y)
+        grads = torch.autograd.grad(loss, model.parameters(),allow_unused=True)
+        for param, grad in zip(final_model.parameters(), grads):
+            param.data.sub_(args.PerFedAvg_beta * grad)
+
+
+        for new_param, localweight in zip(final_model.parameters(), local_model.parameters()):
+            localweight.data = localweight.data - args.pFedMe_lamda * args.pFedMe_alpha * (localweight.data - new_param.data)
+
+        model = copy.deepcopy(final_model)
+
+    return model
+
+
+
+
 if __name__ == '__main__':
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
     seed= 1
     np.random.seed(seed)
     torch.manual_seed(seed)     
@@ -200,9 +256,7 @@ if __name__ == '__main__':
     log_path = os.path.join(args.log_path, args.model)
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-        logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Choking" if args.choke else "" ,args.dataset,args.skew,args.nclient)), 'a')
-    if args.label:
-        logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode + "Labeling",args.dataset,args.skew,args.nclient)), 'w')
+    logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode ,args.dataset,args.skew,args.nclient)), 'w')
     logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
     logfile.write('===Setting===\n')
     logfile.write('    lr: {}\n'.format(args.lr))
@@ -220,26 +274,12 @@ if __name__ == '__main__':
 
     # prepare the data
     train_loaders, test_loaders = prepare_data(args)
+    
+
     # federated setting
     client_num = args.nclient
     client_weights = [1/client_num for i in range(client_num)]
     models = [copy.deepcopy(server_model).to(device) for idx in range(client_num)]
-
-    # if args.test:
-    #     print('Loading snapshots...')
-    #     checkpoint = torch.load(os.path.join(args.load_path, '{}'.format(args.mode)))
-    #     server_model.load_state_dict(checkpoint['server_model'])
-    #     if args.mode.lower()=='fedbn':
-    #         for client_idx in range(client_num):
-    #             models[client_idx].load_state_dict(checkpoint['model_{}'.format(client_idx)])
-    #         for test_idx, test_loader in enumerate(test_loaders):
-    #             _, test_acc = test(models[test_idx], test_loader, loss_fun, device)
-    #             print(' client {}| Test  Acc: {:.4f}'.format(test_idx, test_acc))
-    #     else:
-    #         for test_idx, test_loader in enumerate(test_loaders):
-    #             _, test_acc = test(server_model, test_loader, loss_fun, device)
-    #             print(' client {}| Test  Acc: {:.4f}'.format(test_idx, test_acc))
-    #     exit(0)
 
     if args.resume:
         checkpoint = torch.load(SAVE_PATH)
@@ -254,19 +294,29 @@ if __name__ == '__main__':
         print('Resume training from epoch {}'.format(resume_iter))
     else:
         resume_iter = 0
+
+
     # start training
-    train_losses = []
     for a_iter in range(resume_iter, args.iters):
+
+        #
         optimizers = [optim.SGD(params=models[idx].parameters(), lr=args.lr) for idx in range(client_num)]
         samples = [0 for i in range(client_num)]
         total = 0
-        labels = torch.tensor([])
         for wi in range(args.wk_iters):
             print("============ Train epoch {} ============".format(wi + a_iter * args.wk_iters))
             logfile.write("============ Train epoch {} ============\n".format(wi + a_iter * args.wk_iters)) 
             
             for client_idx in range(client_num):
                 model, train_loader, optimizer = models[client_idx], train_loaders[client_idx], optimizers[client_idx]
+                if args.mode.lower() == 'perfedavg':
+                    print('perfedavg')
+                    train_perfedavg(model, train_loader, optimizer, loss_fun, device)
+                if args.mode.lower() == 'pfedme':
+                    print("pFedMe")
+                    train_pFedMe(model, train_loader, optimizer, loss_fun, device)
+
+
                 if args.mode.lower() == 'fedprox':
                     if a_iter > 0:
                         train_fedprox(args, model, server_model, train_loader, optimizer, loss_fun, client_num, device)
@@ -276,34 +326,20 @@ if __name__ == '__main__':
                     if args.mode.lower() == 'fedavg':
                         samples[client_idx] += len(train_loader)
                         total += len(train_loader)
-                    _, _, labels_num = train_LW(model, train_loader, optimizer, loss_fun, client_num, device,args)
-                    if wi == 0 :
-                        labels = torch.cat((labels,labels_num.unsqueeze(0)),0)
-
+                    train(model, train_loader, optimizer, loss_fun, client_num, device)
          
         # aggregation
-        client_weights = [1/client_num for i in range(client_num)]
         if args.mode.lower() == 'fedavg':
             client_weights = [samples[i]/total for i in range(client_num)]
-        if args.label:
-            total = 0
-            total_label = torch.sum(labels,dim=0)
-            client_w = [0 for i in range(client_num)]
-            for i in range(args.nlabel):
-                for j in range(client_num):
-                    client_w[j] += labels[j][i]/total_label[i]
-            client_weights = [client_w[i]/args.nlabel for i in range(client_num)]
-            print(client_weights)
-        server_model, models = communication(args, server_model, models, client_weights, train_losses)
+        server_model, models = communication(args, server_model, models, client_weights)
+
         min_test_loss = 1000
         max_test_acc = 0
         # report after aggregation
-        train_losses = []
         for client_idx in range(client_num):
                 model, train_loader, optimizer = models[client_idx], train_loaders[client_idx], optimizers[client_idx]
                 train_loss, train_acc = test(model, train_loader, loss_fun, device) 
-                train_losses.append(train_loss)
-                print(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}'.format(client_idx, train_loss, train_acc))
+                print(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}'.format(client_idx ,train_loss, train_acc))
                 logfile.write(' client {}| Train Loss: {:.4f} | Train Acc: {:.4f}\n'.format(client_idx ,train_loss, train_acc))\
 
         # start testing

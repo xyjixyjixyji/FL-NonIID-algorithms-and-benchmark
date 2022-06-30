@@ -10,14 +10,15 @@ import torchvision
 import torchvision.transforms as transforms
 from models.digit import DigitModel, MoonDigitModel
 from models.resnet import *
-from skew import label_skew_across_labels, label_skew_by_within_labels, quantity_skew, feature_skew_noise, feature_skew_filter
+from skew import label_skew_across_labels, label_skew_by_within_labels, quantity_skew, feature_skew_noise, feature_skew_filter, prepare_data
 from datafiles.loaders import dset2loader
 from datafiles.utils import setseed
 from datafiles.preprocess import preprocess
 from tr_utils import train, train_fedprox
-from FedBN import prepare_data
 
-os.environ['CUDA_VISIBLE_DEVICES']='2'
+
+# for GPU server selection
+os.environ['CUDA_VISIBLE_DEVICES']='1'
 
 #
 # COURTESY:
@@ -273,10 +274,23 @@ if __name__ == '__main__':
 
     print('Device:', device)
     args.save_path = os.path.join(args.save_path, args.model)
+    log_path = os.path.join(args.log_path, args.model)
+    if not os.path.exists(log_path):
+        os.makedirs(log_path)
+    logfile = open(os.path.join(log_path,'{}_{}_{}_{}.log'.format(args.mode ,args.dataset,args.skew,args.nclient)), 'w')
+    
+    logfile.write('==={}===\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+    logfile.write('===Setting===\n')
+    logfile.write('    lr: {}\n'.format(args.lr))
+    logfile.write('    batch: {}\n'.format(args.batch_size))
+    logfile.write('    iters: {}\n'.format(args.iters))
+    logfile.write('    wk_iters: {}\n'.format(args.wk_iters))
+
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path)
-    SAVE_PATH = os.path.join(args.save_path, '{}'.format(args.mode))
+    SAVE_PATH = os.path.join(args.save_path, '{}_{}_{}.bin'.format(args.mode,args.dataset,args.skew))
     server_model = eval(args.model)().to(device)
+    
     if args.resume:
         checkpoint = torch.load(SAVE_PATH)
         server_model.load_state_dict(checkpoint['server_model'])
