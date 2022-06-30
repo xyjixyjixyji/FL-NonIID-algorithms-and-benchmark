@@ -61,10 +61,7 @@ assert(args.dataset in ['svhn', 'cifar10', 'mnist', 'kmnist'])
 assert(args.skew in ['none', 'quantity', 'feat_filter', 'feat_noise', 'label_across', 'label_within'])
 assert(args.mode in ['scaffold'])
 setseed(args.seed)
-log_path = os.path.join(args.log_path, args.model)
-if not os.path.exists(log_path):
-    os.makedirs(log_path)
-logfile = open(os.path.join(log_path,'{}_{}_{}.log'.format(args.mode,args.dataset,args.skew)), 'a')
+
 
 class Averager():
     def __init__(self):
